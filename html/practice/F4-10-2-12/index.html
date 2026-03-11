@@ -1,0 +1,72 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鼠标悬停浮现效果</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./index.css">
+    <style>
+      
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>鼠标悬停浮现效果</h1>
+            <p class="subtitle">当鼠标在特定区域悬停时，在鼠标位置浮现文字或图片的交互效果</p>
+        </header>
+        
+        <div class="instructions">
+            <p><i class="fas fa-mouse-pointer"></i> 将鼠标移动到下方卡片区域，查看浮现效果</p>
+            <p><i class="fas fa-cog"></i> 使用控制按钮切换不同的浮现效果类型</p>
+        </div>
+        
+        <div class="controls">
+            <button id="textEffectBtn" class="control-btn active">
+                <i class="fas fa-font"></i> 文字浮现效果
+            </button>
+            <button id="imageEffectBtn" class="control-btn">
+                <i class="fas fa-image"></i> 图片浮现效果
+            </button>
+            <button id="combinedEffectBtn" class="control-btn">
+                <i class="fas fa-layer-group"></i> 组合效果
+            </button>
+        </div>
+        
+        <div class="hover-areas">
+            <!-- 卡片1：自然主题 -->
+            <div class="hover-card" data-text="探索大自然的奥秘" data-image="nature">
+                <h2><i class="fas fa-tree floating"></i> 自然探索</h2>
+                <p>悬停在此区域查看自然主题的浮现效果</p>
+                <div class="hover-indicator">悬停区域</div>
+            </div>
+            
+            <!-- 卡片2：科技主题 -->
+            <div class="hover-card" data-text="科技改变未来生活" data-image="tech">
+                <h2><i class="fas fa-microchip floating"></i> 科技创新</h2>
+                <p>悬停在此区域查看科技主题的浮现效果</p>
+                <div class="hover-indicator">悬停区域</div>
+            </div>
+            
+            <!-- 卡片3：艺术主题 -->
+            <div class="hover-card" data-text="艺术是灵魂的表达" data-image="art">
+                <h2><i class="fas fa-palette floating"></i> 艺术创作</h2>
+                <p>悬停在此区域查看艺术主题的浮现效果</p>
+                <div class="hover-indicator">悬停区域</div>
+            </div>
+        </div>
+        
+        <!-- 浮现元素 -->
+        <div id="hoverEffect" class="hover-effect">
+            <!-- 内容由JavaScript动态生成 -->
+        </div>
+        
+        <footer>
+            <p>鼠标悬停浮现效果演示 &copy; 2023 | 使用纯JavaScript实现</p>
+            <p>提示：尝试在不同区域悬停，体验不同的浮现效果</p>
+        </footer>
+    </div>
+
+    <script src="./index.js"></script>
+</body>
+</html>

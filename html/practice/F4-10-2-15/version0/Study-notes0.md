@@ -1,0 +1,1265 @@
+# Markdown学习笔记预览与查找系统
+
+我将设计一个美观实用的Markdown学习笔记预览和查找页面，让您能够轻松管理学习资料。
+
+## 设计思路
+- 左侧为笔记分类导航和搜索区
+- 中间为笔记列表（带缩略图）
+- 右侧为Markdown预览区
+- 支持实时搜索、分类筛选和标签管理
+- 使用localStorage模拟数据存储
+
+下面是完整的实现代码：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown学习笔记管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr 1.2fr;
+            gap: 25px;
+            height: calc(100vh - 40px);
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--light-gray);
+            border-radius: 50px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .categories h3, .tags h3 {
+            font-size: 16px;
+            margin: 20px 0 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-list, .tag-list {
+            list-style: none;
+        }
+        
+        .category-item, .tag-item {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        
+        .category-item:hover, .tag-item:hover {
+            background: var(--light-gray);
+        }
+        
+        .category-item.active, .tag-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .category-item i, .tag-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .tag-item {
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        /* 笔记列表样式 */
+        .notes-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-header h2 {
+            font-size: 20px;
+            color: var(--dark);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .note-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+            cursor: pointer;
+        }
+        
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .note-thumbnail {
+            height: 140px;
+            background: linear-gradient(135deg, #4361ee, #4cc9f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+        
+        .note-content {
+            padding: 18px;
+        }
+        
+        .note-content h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+        
+        .note-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .note-tag {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 50px;
+        }
+        
+        /* 预览区样式 */
+        .preview-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .preview-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .preview-header h2 {
+            font-size: 20px;
+            color: var(--dark);
+        }
+        
+        .preview-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            color: var(--gray);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .preview-content {
+            padding: 25px;
+            overflow-y: auto;
+            height: 100%;
+        }
+        
+        .markdown-body {
+            line-height: 1.6;
+        }
+        
+        .markdown-body h1, 
+        .markdown-body h2, 
+        .markdown-body h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            color: var(--dark);
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 8px;
+        }
+        
+        .markdown-body h1 {
+            font-size: 28px;
+        }
+        
+        .markdown-body h2 {
+            font-size: 24px;
+        }
+        
+        .markdown-body h3 {
+            font-size: 20px;
+        }
+        
+        .markdown-body p {
+            margin-bottom: 16px;
+        }
+        
+        .markdown-body pre {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        .markdown-body code {
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .markdown-body blockquote {
+            border-left: 4px solid var(--accent);
+            padding: 0 16px;
+            color: var(--gray);
+            margin: 0 0 16px;
+        }
+        
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .markdown-body th, 
+        .markdown-body td {
+            border: 1px solid var(--light-gray);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .markdown-body th {
+            background: var(--light);
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray);
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: var(--light-gray);
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 250px 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .preview-section {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .preview-section {
+                grid-column: span 1;
+            }
+            
+            .notes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>Markdown笔记库</h1>
+            </div>
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="搜索笔记...">
+            </div>
+            
+            <div class="categories">
+                <h3><i class="fas fa-folder"></i> 分类</h3>
+                <ul class="category-list">
+                    <li class="category-item active" data-category="all">
+                        <i class="fas fa-layer-group"></i> 全部笔记
+                    </li>
+                    <li class="category-item" data-category="web">
+                        <i class="fas fa-globe"></i> Web开发
+                    </li>
+                    <li class="category-item" data-category="language">
+                        <i class="fas fa-language"></i> 编程语言
+                    </li>
+                    <li class="category-item" data-category="algorithm">
+                        <i class="fas fa-brain"></i> 算法与数据结构
+                    </li>
+                    <li class="category-item" data-category="devops">
+                        <i class="fas fa-server"></i> DevOps
+                    </li>
+                    <li class="category-item" data-category="database">
+                        <i class="fas fa-database"></i> 数据库
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="tags">
+                <h3><i class="fas fa-tags"></i> 热门标签</h3>
+                <div class="tag-list">
+                    <span class="tag-item active">JavaScript</span>
+                    <span class="tag-item">React</span>
+                    <span class="tag-item">Vue</span>
+                    <span class="tag-item">Node.js</span>
+                    <span class="tag-item">Python</span>
+                    <span class="tag-item">CSS</span>
+                    <span class="tag-item">HTML</span>
+                    <span class="tag-item">Git</span>
+                    <span class="tag-item">Docker</span>
+                    <span class="tag-item">MongoDB</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 笔记列表区 -->
+        <div class="notes-section">
+            <div class="section-header">
+                <h2>学习笔记</h2>
+                <button class="btn" id="newNoteBtn">
+                    <i class="fas fa-plus"></i> 新建笔记
+                </button>
+            </div>
+            
+            <div class="notes-grid" id="notesGrid">
+                <!-- 笔记卡片将通过JS动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 预览区 -->
+        <div class="preview-section">
+            <div class="preview-header">
+                <h2 id="previewTitle">选择笔记进行预览</h2>
+                <div class="preview-actions">
+                    <button class="action-btn" title="编辑">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn" title="下载">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="action-btn" title="删除">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="preview-content" id="previewContent">
+                <div class="empty-state">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>没有选择笔记</h3>
+                    <p>从左侧列表中选择一个笔记进行预览</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化Marked.js和Highlight.js
+        marked.setOptions({
+            breaks: true,
+            highlight: function(code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            }
+        });
+        
+        // 模拟笔记数据
+        const notesData = [
+            {
+                id: 1,
+                title: "JavaScript高级特性",
+                category: "language",
+                tags: ["JavaScript", "ES6"],
+                date: "2023-06-15",
+                thumbnail: "JS",
+                content: `# JavaScript高级特性
+
+## 闭包
+闭包是指有权访问另一个函数作用域中的变量的函数。
+
+\`\`\`javascript
+function outer() {
+    let count = 0;
+    return function inner() {
+        count++;
+        return count;
+    }
+}
+
+const counter = outer();
+console.log(counter()); // 1
+console.log(counter()); // 2
+\`\`\`
+
+## Promise
+Promise用于处理异步操作，避免回调地狱。
+
+\`\`\`javascript
+const fetchData = () => {
+    return new Promise((resolve, reject) => {
+        // 模拟异步操作
+        setTimeout(() => {
+            resolve({ data: "成功获取数据" });
+        }, 1000);
+    });
+};
+
+fetchData()
+    .then(response => console.log(response.data))
+    .catch(error => console.error(error));
+\`\`\`
+
+## Async/Await
+Async/Await是基于Promise的语法糖，使异步代码看起来像同步代码。
+
+\`\`\`javascript
+async function getData() {
+    try {
+        const response = await fetch('https://api.example.com/data');
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error("获取数据失败:", error);
+    }
+}
+\`\`\`
+`
+            },
+            {
+                id: 2,
+                title: "React Hooks指南",
+                category: "web",
+                tags: ["React", "Hooks"],
+                date: "2023-07-02",
+                thumbnail: "⚛️",
+                content: `# React Hooks指南
+
+## useState
+用于在函数组件中添加状态。
+
+\`\`\`jsx
+import React, { useState } from 'react';
+
+function Counter() {
+    const [count, setCount] = useState(0);
+    
+    return (
+        <div>
+            <p>计数: {count}</p>
+            <button onClick={() => setCount(count + 1)}>增加</button>
+        </div>
+    );
+}
+\`\`\`
+
+## useEffect
+用于处理副作用，相当于componentDidMount、componentDidUpdate和componentWillUnmount的组合。
+
+\`\`\`jsx
+import React, { useState, useEffect } from 'react';
+
+function DataFetcher() {
+    const [data, setData] = useState(null);
+    
+    useEffect(() => {
+        // 组件挂载时获取数据
+        fetch('/api/data')
+            .then(res => res.json())
+            .then(data => setData(data));
+            
+        // 清理函数（可选）
+        return () => {
+            // 取消请求或清理订阅
+        };
+    }, []); // 空依赖数组表示只在挂载时运行
+    
+    return <div>{data ? JSON.stringify(data) : '加载中...'}</div>;
+}
+\`\`\`
+
+## 自定义Hook
+可以将组件逻辑提取到可重用的函数中。
+
+\`\`\`jsx
+function useLocalStorage(key, initialValue) {
+    const [storedValue, setStoredValue] = useState(() => {
+        try {
+            const item = window.localStorage.getItem(key);
+            return item ? JSON.parse(item) : initialValue;
+        } catch (error) {
+            return initialValue;
+        }
+    });
+    
+    const setValue = value => {
+        try {
+            const valueToStore = value instanceof Function ? value(storedValue) : value;
+            setStoredValue(valueToStore);
+            window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    
+    return [storedValue, setValue];
+}
+\`\`\`
+`
+            },
+            {
+                id: 3,
+                title: "Python数据结构",
+                category: "language",
+                tags: ["Python", "数据结构"],
+                date: "2023-05-20",
+                thumbnail: "🐍",
+                content: `# Python数据结构
+
+## 列表(List)
+有序的可变集合。
+
+\`\`\`python
+# 创建列表
+fruits = ['apple', 'banana', 'cherry']
+
+# 添加元素
+fruits.append('orange')
+
+# 访问元素
+print(fruits[0])  # apple
+
+# 切片
+print(fruits[1:3])  # ['banana', 'cherry']
+\`\`\`
+
+## 字典(Dictionary)
+键值对的无序集合。
+
+\`\`\`python
+# 创建字典
+person = {
+    'name': 'Alice',
+    'age': 30,
+    'city': 'New York'
+}
+
+# 访问值
+print(person['name'])  # Alice
+
+# 添加新键值对
+person['email'] = 'alice@example.com'
+
+# 遍历字典
+for key, value in person.items():
+    print(f"{key}: {value}")
+\`\`\`
+
+## 集合(Set)
+无序的唯一元素集合。
+
+\`\`\`python
+# 创建集合
+numbers = {1, 2, 3, 4, 5}
+
+# 添加元素
+numbers.add(6)
+
+# 集合运算
+a = {1, 2, 3}
+b = {3, 4, 5}
+print(a | b)  # 并集: {1, 2, 3, 4, 5}
+print(a & b)  # 交集: {3}
+print(a - b)  # 差集: {1, 2}
+\`\`\`
+`
+            },
+            {
+                id: 4,
+                title: "CSS Grid布局",
+                category: "web",
+                tags: ["CSS", "布局"],
+                date: "2023-06-28",
+                thumbnail: "📐",
+                content: `# CSS Grid布局
+
+## 基本概念
+Grid布局是一个二维布局系统，可以同时处理行和列。
+
+## 创建网格容器
+\`\`\`css
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* 三列等宽 */
+    grid-template-rows: 100px auto;    /* 两行，第一行高100px */
+    gap: 20px;                         /* 行列间距 */
+}
+\`\`\`
+
+## 放置网格项
+\`\`\`css
+.item1 {
+    grid-column: 1 / 3; /* 从第1列线到第3列线（占据两列） */
+    grid-row: 1;        /* 第1行 */
+}
+
+.item2 {
+    grid-column: 3;     /* 第3列 */
+    grid-row: 1 / 3;    /* 从第1行线到第3行线（占据两行） */
+}
+\`\`\`
+
+## 响应式网格
+\`\`\`css
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+\`\`\`
+
+## 网格区域命名
+\`\`\`css
+.container {
+    display: grid;
+    grid-template-areas:
+        "header header header"
+        "sidebar content content"
+        "footer footer footer";
+}
+
+.header { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.content { grid-area: content; }
+.footer { grid-area: footer; }
+\`\`\`
+`
+            },
+            {
+                id: 5,
+                title: "Docker入门指南",
+                category: "devops",
+                tags: ["Docker", "容器"],
+                date: "2023-07-10",
+                thumbnail: "🐳",
+                content: `# Docker入门指南
+
+## 核心概念
+- **镜像(Image)**: 容器的只读模板
+- **容器(Container)**: 镜像的运行实例
+- **仓库(Repository)**: 存储镜像的地方
+
+## 常用命令
+\`\`\`bash
+# 列出本地镜像
+docker images
+
+# 拉取镜像
+docker pull ubuntu:20.04
+
+# 运行容器
+docker run -it --name my_container ubuntu:20.04 /bin/bash
+
+# 列出运行中的容器
+docker ps
+
+# 列出所有容器（包括停止的）
+docker ps -a
+
+# 停止容器
+docker stop my_container
+
+# 启动容器
+docker start my_container
+
+# 删除容器
+docker rm my_container
+
+# 删除镜像
+docker rmi ubuntu:20.04
+\`\`\`
+
+## Dockerfile示例
+\`\`\`dockerfile
+# 基础镜像
+FROM node:14-alpine
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制依赖文件
+COPY package*.json ./
+
+# 安装依赖
+RUN npm install
+
+# 复制源代码
+COPY . .
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动命令
+CMD ["npm", "start"]
+\`\`\`
+
+## Docker Compose
+用于定义和运行多容器应用。
+
+\`\`\`yaml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    environment:
+      NODE_ENV: development
+  db:
+    image: mongo:4
+    volumes:
+      - ./data:/data/db
+\`\`\`
+`
+            },
+            {
+                id: 6,
+                title: "算法：排序算法",
+                category: "algorithm",
+                tags: ["算法", "排序"],
+                date: "2023-05-15",
+                thumbnail: "🔢",
+                content: `# 排序算法
+
+## 冒泡排序
+\`\`\`javascript
+function bubbleSort(arr) {
+    const n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // 交换元素
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+            }
+        }
+    }
+    return arr;
+}
+\`\`\`
+时间复杂度: O(n²)
+
+## 快速排序
+\`\`\`javascript
+function quickSort(arr, low = 0, high = arr.length - 1) {
+    if (low < high) {
+        const pivotIndex = partition(arr, low, high);
+        quickSort(arr, low, pivotIndex - 1);
+        quickSort(arr, pivotIndex + 1, high);
+    }
+    return arr;
+}
+
+function partition(arr, low, high) {
+    const pivot = arr[high];
+    let i = low - 1;
+    
+    for (let j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+    
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    return i + 1;
+}
+\`\`\`
+时间复杂度: 平均 O(n log n)，最坏 O(n²)
+
+## 归并排序
+\`\`\`javascript
+function mergeSort(arr) {
+    if (arr.length <= 1) return arr;
+    
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+    
+    return merge(left, right);
+}
+
+function merge(left, right) {
+    let result = [];
+    let i = 0, j = 0;
+    
+    while (i < left.length && j < right.length) {
+        if (left[i] < right[j]) {
+            result.push(left[i]);
+            i++;
+        } else {
+            result.push(right[j]);
+            j++;
+        }
+    }
+    
+    return result.concat(left.slice(i)).concat(right.slice(j));
+}
+\`\`\`
+时间复杂度: O(n log n)
+`
+            }
+        ];
+
+        // DOM元素
+        const notesGrid = document.getElementById('notesGrid');
+        const previewContent = document.getElementById('previewContent');
+        const previewTitle = document.getElementById('previewTitle');
+        const searchInput = document.getElementById('searchInput');
+        const categoryItems = document.querySelectorAll('.category-item');
+        const tagItems = document.querySelectorAll('.tag-item');
+        const newNoteBtn = document.getElementById('newNoteBtn');
+
+        // 当前选中的分类和标签
+        let currentCategory = 'all';
+        let currentTag = '';
+        let currentSearch = '';
+        let selectedNoteId = null;
+
+        // 初始化页面
+        function initPage() {
+            renderNotes(notesData);
+            setupEventListeners();
+        }
+
+        // 渲染笔记列表
+        function renderNotes(notes) {
+            notesGrid.innerHTML = '';
+            
+            if (notes.length === 0) {
+                notesGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-inbox"></i>
+                        <h3>没有找到笔记</h3>
+                        <p>尝试更改搜索条件或创建新笔记</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notes.forEach(note => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card';
+                noteCard.dataset.id = note.id;
+                
+                noteCard.innerHTML = `
+                    <div class="note-thumbnail">${note.thumbnail}</div>
+                    <div class="note-content">
+                        <h3>${note.title}</h3>
+                        <div class="note-meta">
+                            <span>${note.date}</span>
+                            <span>${getCategoryIcon(note.category)} ${getCategoryName(note.category)}</span>
+                        </div>
+                        <div class="note-tags">
+                            ${note.tags.map(tag => `<span class="note-tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                notesGrid.appendChild(noteCard);
+            });
+            
+            // 选中第一个笔记
+            if (!selectedNoteId && notes.length > 0) {
+                selectNote(notes[0].id);
+            }
+        }
+
+        // 获取分类名称
+        function getCategoryName(category) {
+            const categories = {
+                'web': 'Web开发',
+                'language': '编程语言',
+                'algorithm': '算法',
+                'devops': 'DevOps',
+                'database': '数据库'
+            };
+            return categories[category] || category;
+        }
+
+        // 获取分类图标
+        function getCategoryIcon(category) {
+            const icons = {
+                'web': '🌐',
+                'language': '💻',
+                'algorithm': '🧠',
+                'devops': '🔧',
+                'database': '🗄️'
+            };
+            return icons[category] || '📝';
+        }
+
+        // 选择笔记
+        function selectNote(noteId) {
+            selectedNoteId = noteId;
+            const note = notesData.find(n => n.id === noteId);
+            
+            if (note) {
+                previewTitle.textContent = note.title;
+                previewContent.innerHTML = `
+                    <div class="markdown-body">
+                        ${marked.parse(note.content)}
+                    </div>
+                `;
+                
+                // 高亮代码块
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+            }
+            
+            // 更新卡片选中状态
+            document.querySelectorAll('.note-card').forEach(card => {
+                card.classList.toggle('active', parseInt(card.dataset.id) === noteId);
+            });
+        }
+
+        // 过滤笔记
+        function filterNotes() {
+            let filteredNotes = notesData;
+            
+            // 按分类过滤
+            if (currentCategory !== 'all') {
+                filteredNotes = filteredNotes.filter(note => note.category === currentCategory);
+            }
+            
+            // 按标签过滤
+            if (currentTag) {
+                filteredNotes = filteredNotes.filter(note => note.tags.includes(currentTag));
+            }
+            
+            // 按搜索词过滤
+            if (currentSearch) {
+                const searchLower = currentSearch.toLowerCase();
+                filteredNotes = filteredNotes.filter(note => 
+                    note.title.toLowerCase().includes(searchLower) || 
+                    note.content.toLowerCase().includes(searchLower) ||
+                    note.tags.some(tag => tag.toLowerCase().includes(searchLower))
+                );
+            }
+            
+            renderNotes(filteredNotes);
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 笔记卡片点击
+            notesGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.note-card');
+                if (card) {
+                    const noteId = parseInt(card.dataset.id);
+                    selectNote(noteId);
+                }
+            });
+            
+            // 搜索输入
+            searchInput.addEventListener('input', (e) => {
+                currentSearch = e.target.value.trim();
+                filterNotes();
+            });
+            
+            // 分类点击
+            categoryItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    categoryItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    currentCategory = item.dataset.category;
+                    filterNotes();
+                });
+            });
+            
+            // 标签点击
+            tagItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // 切换选中状态
+                    const wasActive = item.classList.contains('active');
+                    tagItems.forEach(i => i.classList.remove('active'));
+                    
+                    if (!wasActive) {
+                        item.classList.add('active');
+                        currentTag = item.textContent;
+                    } else {
+                        currentTag = '';
+                    }
+                    
+                    filterNotes();
+                });
+            });
+            
+            // 新建笔记按钮
+            newNoteBtn.addEventListener('click', () => {
+                const newNote = {
+                    id: notesData.length + 1,
+                    title: "新笔记",
+                    category: "web",
+                    tags: ["新笔记"],
+                    date: new Date().toISOString().split('T')[0],
+                    thumbnail: "📄",
+                    content: "# 新笔记\n\n在这里写下你的学习内容..."
+                };
+                
+                notesData.unshift(newNote);
+                filterNotes();
+                selectNote(newNote.id);
+            });
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
+```
+
+## 功能亮点
+
+1. **三栏式布局设计**
+   - 左侧：分类导航和标签云
+   - 中部：笔记卡片列表（带缩略图）
+   - 右侧：Markdown预览区（支持代码高亮）
+
+2. **强大的搜索与筛选功能**
+   - 实时搜索笔记标题、内容和标签
+   - 按分类筛选（Web开发、编程语言等）
+   - 按标签筛选（JavaScript、React等）
+
+3. **Markdown预览功能**
+   - 使用marked.js解析Markdown
+   - 使用highlight.js实现代码高亮
+   - 支持表格、代码块、列表等格式
+
+4. **响应式设计**
+   - 适配桌面、平板和手机设备
+   - 在小屏幕上自动调整布局
+
+5. **模拟数据存储**
+   - 使用JavaScript数组存储笔记数据
+   - 支持新建笔记功能
+
+## 使用说明
+
+1. 点击左侧分类或标签筛选笔记
+2. 在搜索框中输入关键词实时过滤笔记
+3. 点击笔记卡片在右侧预览内容
+4. 点击"新建笔记"按钮添加新笔记
+5. 使用预览区上方的按钮编辑、下载或删除笔记
+
+这个页面完全使用前端技术实现，无需后端支持，可以直接在浏览器中运行。您可以根据需要扩展功能，如添加持久化存储或与云服务集成。

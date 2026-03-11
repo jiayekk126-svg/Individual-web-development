@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页元素延迟浮现效果</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>元素延迟浮现效果</h1>
+            <p class="subtitle">使用CSS动画和JavaScript实现页面元素按顺序延迟显示的优雅效果</p>
+        </header>
+        
+        <div class="instructions">
+            <p><i class="fas fa-lightbulb"></i> 本页展示了如何实现元素延迟浮现效果，增强页面加载体验和视觉吸引力</p>
+            <p><i class="fas fa-code"></i> 通过CSS动画和JavaScript控制，元素可以在不同时间点以不同方式出现</p>
+        </div>
+        
+        <div class="content-grid">
+            <div class="card">
+                <h2><i class="fas fa-layer-group"></i> CSS动画实现</h2>
+                <p>使用CSS关键帧动画控制元素的显示时机和效果。</p>
+                <div class="code-block">
+                    <span class="code-keyword">.element</span> {<br>
+                    &nbsp;&nbsp;opacity: 0;<br>
+                    &nbsp;&nbsp;transform: translateY(20px);<br>
+                    &nbsp;&nbsp;<span class="code-keyword">animation</span>: fadeInUp 0.8s ease-out <span class="code-value">forwards</span>;<br>
+                    &nbsp;&nbsp;<span class="code-keyword">animation-delay</span>: <span class="code-value">0.5s</span>; <span class="code-comment">/* 延迟0.5秒 */</span><br>
+                    }<br><br>
+                    
+                    @<span class="code-keyword">keyframes</span> fadeInUp {<br>
+                    &nbsp;&nbsp;from {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;opacity: 0;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;transform: translateY(20px);<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;to {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;opacity: 1;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;transform: translateY(0);<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-sync-alt"></i> JavaScript控制</h2>
+                <p>使用JavaScript动态添加类名或样式，实现更灵活的延迟效果。</p>
+                <div class="code-block">
+                    <span class="code-comment">// 页面加载后延迟显示元素</span><br>
+                    window.addEventListener(<span class="code-value">'load'</span>, () => {<br>
+                    &nbsp;&nbsp;setTimeout(() => {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;document.getElementById(<span class="code-value">'element'</span>)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.classList.add(<span class="code-value">'visible'</span>);<br>
+                    &nbsp;&nbsp;}, <span class="code-value">1000</span>); <span class="code-comment">// 延迟1秒</span><br>
+                    });<br><br>
+                    
+                    <span class="code-comment">// 交错显示多个元素</span><br>
+                    document.querySelectorAll(<span class="code-value">'.item'</span>).forEach((el, i) => {<br>
+                    &nbsp;&nbsp;setTimeout(() => {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;el.classList.add(<span class="code-value">'visible'</span>);<br>
+                    &nbsp;&nbsp;}, i * <span class="code-value">300</span>); <span class="code-comment">// 每个元素延迟300ms</span><br>
+                    });
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-sliders-h"></i> 效果参数</h2>
+                <p>通过调整参数可以创建不同的延迟浮现效果：</p>
+                <ul style="padding-left: 20px; margin-top: 15px; line-height: 1.8;">
+                    <li>延迟时间（Animation Delay）</li>
+                    <li>持续时间（Duration）</li>
+                    <li>缓动函数（Easing Function）</li>
+                    <li>动画方向（Direction）</li>
+                    <li>动画填充模式（Fill Mode）</li>
+                </ul>
+                <p style="margin-top: 20px;">常用缓动函数：ease, ease-in, ease-out, ease-in-out, linear</p>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-magic"></i> 应用场景</h2>
+                <p>延迟浮现效果适用于：</p>
+                <ul style="padding-left: 20px; margin-top: 15px; line-height: 1.8;">
+                    <li>页面加载时的元素序列显示</li>
+                    <li>滚动触发的动画效果</li>
+                    <li>用户交互后的反馈动画</li>
+                    <li>分步教程或引导流程</li>
+                    <li>数据可视化中的渐进式展示</li>
+                </ul>
+                <p style="margin-top: 20px;">合理使用可显著提升用户体验和参与度</p>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h2><i class="fas fa-play-circle"></i> 效果演示控制面板</h2>
+            
+            <div class="control-group">
+                <div class="control-item">
+                    <label for="delayRange"><i class="fas fa-clock"></i> 基础延迟时间 (ms)</label>
+                    <input type="range" id="delayRange" min="0" max="2000" value="500" step="100">
+                    <div class="value-display"><span id="delayValue">500</span> ms</div>
+                </div>
+                
+                <div class="control-item">
+                    <label for="intervalRange"><i class="fas fa-exchange-alt"></i> 元素间隔 (ms)</label>
+                    <input type="range" id="intervalRange" min="50" max="1000" value="300" step="50">
+                    <div class="value-display"><span id="intervalValue">300</span> ms</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-item">
+                    <label for="durationRange"><i class="fas fa-hourglass-half"></i> 动画时长 (ms)</label>
+                    <input type="range" id="durationRange" min="200" max="2000" value="800" step="100">
+                    <div class="value-display"><span id="durationValue">800</span> ms</div>
+                </div>
+                
+                <div class="control-item">
+                    <label for="effectSelect"><i class="fas fa-star"></i> 动画效果</label>
+                    <select id="effectSelect" class="control-btn" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 8px;">
+                        <option value="fadeInUp">淡入上浮</option>
+                        <option value="popIn">弹入</option>
+                        <option value="slideInLeft">左侧滑入</option>
+                        <option value="zoomIn">缩放进入</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="demo-area">
+                <div class="demo-element" style="animation-delay: 0.2s;">1</div>
+                <div class="demo-element" style="animation-delay: 0.6s;">2</div>
+                <div class="demo-element" style="animation-delay: 1.0s;">3</div>
+                <div class="demo-element" style="animation-delay: 1.4s;">4</div>
+            </div>
+            
+            <button id="resetDemo" class="reset-btn">
+                <i class="fas fa-redo"></i> 重新演示效果
+            </button>
+        </div>
+        
+        <footer>
+            <p>网页元素延迟浮现效果演示 &copy; 2023 | 使用纯CSS和JavaScript实现</p>
+            <p>提示：调整上方控制面板的参数可以改变动画效果</p>
+        </footer>
+    </div>
+
+    <script src="./index.js"></script>
+</body>
+</html>

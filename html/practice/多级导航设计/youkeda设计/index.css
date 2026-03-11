@@ -1,0 +1,66 @@
+.box {
+  position: relative;
+}
+.menu-list {
+  background-color: #262836;
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.27);
+  border-radius: 4px;
+  padding: 10px 0;
+  width: 98px;
+  margin-right: 7px;
+  cursor: pointer;
+}
+
+.menu-list li {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #a2a2a2;
+  padding: 0 10px;
+}
+
+.menu-list li .left {
+  display: flex;
+  align-items: center;
+}
+
+.menu-list li .icon {
+  width: 12px;
+  height: 12px;
+  margin-right: 10px;
+}
+
+.menu-list li .more {
+  width: 5px;
+  height: 8px;
+}
+
+.menu-list li:last-child {
+  margin-bottom: 0;
+}
+
+.menu-list li.active {
+  background-color: #171924;
+}
+
+.menu-list li:hover {
+  background-color: #171924;
+}
+
+
+.second li:hover {
+  background-color: #171924;
+}
+
+.first {
+  position: absolute;
+  left: 30px;
+}
+
+.second {
+  position: absolute;
+  left: 138px;
+}

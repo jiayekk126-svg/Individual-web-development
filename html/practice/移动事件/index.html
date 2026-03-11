@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #outer { padding: 50px; background: lightblue; }
+    #middle { padding: 30px; background: lightgreen; }
+    #inner { padding: 20px; background: lightcoral; }
+  </style>
+</head>
+<body>
+  <div id="outer">外层（outer）
+    <div id="middle">中层（middle）
+      <div id="inner">内层（inner）</div>
+    </div>
+  </div>
+
+  <script>
+    // 步骤 2：获取 DOM 元素
+    const outer = document.getElementById('outer');
+    const middle = document.getElementById('middle');
+    const inner = document.getElementById('inner');
+
+    // 步骤 3：给每个元素绑定 5 个事件，打印日志
+    [outer, middle, inner].forEach((el) => {
+      // 1. mousemove：持续触发
+      el.addEventListener('mousemove', () => {
+        console.log(`${el.id} - mousemove：鼠标在${el.id}内移动`);
+      });
+
+      // 2. mouseenter：进入自身时触发
+      el.addEventListener('mouseenter', () => {
+        console.log(`${el.id} - mouseenter：鼠标进入${el.id}（自身）`);
+      });
+
+      // 3. mouseleave：离开自身时触发
+      el.addEventListener('mouseleave', () => {
+        console.log(`${el.id} - mouseleave：鼠标离开${el.id}（自身）`);
+      });
+
+      // 4. mouseover：进入自身或子元素时触发
+      el.addEventListener('mouseover', () => {
+        console.log(`${el.id} - mouseover：鼠标进入${el.id} 或 它的子元素`);
+      });
+
+      // 5. mouseout：离开自身或移到子元素时触发
+      el.addEventListener('mouseout', () => {
+        console.log(`${el.id} - mouseout：鼠标离开${el.id} 或 移到它的子元素`);
+      });
+    });
+  </script>
+</body>
+</html>

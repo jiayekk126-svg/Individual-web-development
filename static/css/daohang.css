@@ -1,0 +1,83 @@
+  /* 背景图片 */
+        body {
+            margin: 0;            /* 去掉默认边距 */
+            padding: 0;
+            height: 100vh;        /* 让 body 占满整个视口高度 */
+            background-image: url('../images/bg1.png');  /* 你的背景图片路径 */
+            background-size: contain;      /* 图片覆盖整个区域，可能会裁剪 */
+            background-position: center; /* 图片居中显示 */
+            background-repeat: no-repeat; /* 禁止重复平铺 */
+            background-attachment: fixed;
+        }
+        /*导航设置*/
+        .navhead{
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            height: 90px;
+            background: rgba(51, 51, 51, 0.5);
+            color: white;
+            padding: 0px 60px;
+            z-index: 1000;
+            width: 100%;
+            align-items: center;
+        }
+        .nav-link {
+            display: flex;
+            gap: 40px;
+            margin: 20px;
+            color: white;
+        }
+        .nav-link a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .nav-link a:hover {
+            color: #e31515;
+        }
+        /* 设置白色背景或透明度 */
+        h2 {
+            color: white;
+            text-shadow: 1px 1px 1px black; /* 文字加阴影 */
+        }
+        .content1 {
+            padding: 20px;
+            color: white;
+            position: relative;
+            top: 90px;
+        }
+        /*动态变化透明度设置*/
+        .hover-transparent  {      /*定义一个模块其属性如下*/
+            background-color: grey;  /*背景颜色设置*/
+            opacity: 0.8;       /*透明度设置*/
+            transition: opacity 0.3s;/*动画变化过程，需要0.3秒*/
+             
+        }
+        a{
+            text-decoration: none;
+        }
+        .hover-transparent:hover { /*在鼠标触碰时透明度下降到0.4*/
+            opacity: 0.4;
+            
+        }
+         /* 使用RGBA颜色值设置透明度 */
+        .rgba {
+            background-color: rgba(255, 0, 0, 0.5); /* 红色，50%透明度 */
+        }
+
+        /*使用HSLA颜色值设置透明度 */
+        .hsla {
+            background-color: hsla(120, 100%, 50%, 0.3); /* 绿色，30%透明度 */
+        }
+        .jiao{
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+            

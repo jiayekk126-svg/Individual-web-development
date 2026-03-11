@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript按钮跳转功能</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JavaScript按钮跳转功能</h1>
+            <p class="subtitle">学习如何使用JavaScript实现按钮点击跳转到其他网站的各种方法，包含完整代码示例和视觉效果</p>
+        </header>
+        
+        <div class="cards-container">
+            <!-- 卡片1：基本跳转 -->
+            <div class="card">
+                <h2><i class="fas fa-location-arrow"></i> 基本页面跳转</h2>
+                <p class="description">使用window.location.href实现当前页面跳转到指定URL</p>
+                <button id="basicJumpBtn" class="btn pulse">跳转到示例网站</button>
+                
+                <div class="code-block">
+                    <span class="code-comment">// 获取按钮元素</span><br>
+                    <span class="code-keyword">const</span> <span class="code-var">btn</span> = document.<span class="code-function">getElementById</span>(<span class="code-string">'basicJumpBtn'</span>);<br><br>
+                    
+                    <span class="code-comment">// 添加点击事件监听器</span><br>
+                    <span class="code-var">btn</span>.addEventListener(<span class="code-string">'click'</span>, <span class="code-keyword">function</span>() {<br>
+                    &nbsp;&nbsp;<span class="code-comment">// 跳转到新页面</span><br>
+                    &nbsp;&nbsp;window.location.href = <span class="code-string">'https://example.com'</span>;<br>
+                    });
+                </div>
+            </div>
+            
+            <!-- 卡片2：新标签页打开 -->
+            <div class="card">
+                <h2><i class="fas fa-external-link-alt"></i> 新标签页打开</h2>
+                <p class="description">使用window.open在新标签页中打开URL</p>
+                <button id="newTabBtn" class="btn">在新标签页打开</button>
+                
+                <div class="code-block">
+                    <span class="code-keyword">const</span> <span class="code-var">btn</span> = document.<span class="code-function">getElementById</span>(<span class="code-string">'newTabBtn'</span>);<br><br>
+                    
+                    <span class="code-var">btn</span>.addEventListener(<span class="code-string">'click'</span>, <span class="code-keyword">function</span>() {<br>
+                    &nbsp;&nbsp;<span class="code-comment">// 在新标签页打开URL</span><br>
+                    &nbsp;&nbsp;window.open(<span class="code-string">'https://example.com'</span>, <span class="code-string">'_blank'</span>);<br>
+                    });
+                </div>
+            </div>
+            
+            <!-- 卡片3：延迟跳转 -->
+            <div class="card">
+                <h2><i class="fas fa-clock"></i> 延迟跳转</h2>
+                <p class="description">使用setTimeout实现延迟一段时间后跳转</p>
+                <button id="delayedJumpBtn" class="btn">5秒后跳转</button>
+                
+                <div class="code-block">
+                    <span class="code-keyword">const</span> <span class="code-var">btn</span> = document.<span class="code-function">getElementById</span>(<span class="code-string">'delayedJumpBtn'</span>);<br><br>
+                    
+                    <span class="code-var">btn</span>.addEventListener(<span class="code-string">'click'</span>, <span class="code-keyword">function</span>() {<br>
+                    &nbsp;&nbsp;<span class="code-comment">// 显示倒计时提示</span><br>
+                    &nbsp;&nbsp;alert(<span class="code-string">'将在5秒后跳转到示例网站...'</span>);<br><br>
+                    
+                    &nbsp;&nbsp;<span class="code-comment">// 5秒后跳转</span><br>
+                    &nbsp;&nbsp;setTimeout(<span class="code-keyword">function</span>() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;window.location.href = <span class="code-string">'https://example.com'</span>;<br>
+                    &nbsp;&nbsp;}, 5000); <span class="code-comment">// 5000毫秒 = 5秒</span><br>
+                    });
+                </div>
+            </div>
+            
+            <!-- 卡片4：确认后跳转 -->
+            <div class="card">
+                <h2><i class="fas fa-question-circle"></i> 确认后跳转</h2>
+                <p class="description">添加确认对话框，用户确认后再跳转</p>
+                <button id="confirmJumpBtn" class="btn">带确认的跳转</button>
+                
+                <div class="code-block">
+                    <span class="code-keyword">const</span> <span class="code-var">btn</span> = document.<span class="code-function">getElementById</span>(<span class="code-string">'confirmJumpBtn'</span>);<br><br>
+                    
+                    <span class="code-var">btn</span>.addEventListener(<span class="code-string">'click'</span>, <span class="code-keyword">function</span>() {<br>
+                    &nbsp;&nbsp;<span class="code-comment">// 显示确认对话框</span><br>
+                    &nbsp;&nbsp;<span class="code-keyword">const</span> <span class="code-var">confirmed</span> = confirm(<span class="code-string">'您确定要跳转到示例网站吗？'</span>);<br><br>
+                    
+                    &nbsp;&nbsp;<span class="code-comment">// 如果用户点击"确定"</span><br>
+                    &nbsp;&nbsp;<span class="code-keyword">if</span> (<span class="code-var">confirmed</span>) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;window.location.href = <span class="code-string">'https://example.com'</span>;<br>
+                    &nbsp;&nbsp;}<br>
+                    });
+                </div>
+            </div>
+            
+            <!-- 卡片5：动态URL跳转 -->
+            <div class="card">
+                <h2><i class="fas fa-code"></i> 动态URL跳转</h2>
+                <p class="description">根据用户输入或选择动态决定跳转目标</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <select id="siteSelector" class="btn" style="flex: 1;">
+                        <option value="https://google.com">Google</option>
+                        <option value="https://github.com">GitHub</option>
+                        <option value="https://wikipedia.org">Wikipedia</option>
+                    </select>
+                    <button id="dynamicJumpBtn" class="btn">跳转</button>
+                </div>
+                
+                <div class="code-block">
+                    <span class="code-keyword">const</span> <span class="code-var">btn</span> = document.<span class="code-function">getElementById</span>(<span class="code-string">'dynamicJumpBtn'</span>);<br>
+                    <span class="code-keyword">const</span> <span class="code-var">selector</span> = document.<span class="code-function">getElementById</span>(<span class="code-string">'siteSelector'</span>);<br><br>
+                    
+                    <span class="code-var">btn</span>.addEventListener(<span class="code-string">'click'</span>, <span class="code-keyword">function</span>() {<br>
+                    &nbsp;&nbsp;<span class="code-comment">// 获取选择的URL</span><br>
+                    &nbsp;&nbsp;<span class="code-keyword">const</span> <span class="code-var">targetUrl</span> = <span class="code-var">selector</span>.value;<br><br>
+                    
+                    &nbsp;&nbsp;<span class="code-comment">// 跳转到选择的网站</span><br>
+                    &nbsp;&nbsp;window.location.href = <span class="code-var">targetUrl</span>;<br>
+                    });
+                </div>
+            </div>
+            
+            <!-- 卡片6：带参数的跳转 -->
+            <div class="card">
+                <h2><i class="fas fa-paper-plane"></i> 带参数的跳转</h2>
+                <p class="description">在URL中添加查询参数传递数据</p>
+                <button id="paramJumpBtn" class="btn">带参数跳转</button>
+                
+                <div class="code-block">
+                    <span class="code-keyword">const</span> <span class="code-var">btn</span> = document.<span class="code-function">getElementById</span>(<span class="code-string">'paramJumpBtn'</span>);<br><br>
+                    
+                    <span class="code-var">btn</span>.addEventListener(<span class="code-string">'click'</span>, <span class="code-keyword">function</span>() {<br>
+                    &nbsp;&nbsp;<span class="code-comment">// 定义要传递的参数</span><br>
+                    &nbsp;&nbsp;<span class="code-keyword">const</span> <span class="code-var">userId</span> = <span class="code-string">'12345'</span>;<br>
+                    &nbsp;&nbsp;<span class="code-keyword">const</span> <span class="code-var">source</span> = <span class="code-string">'demo-page'</span>;<br><br>
+                    
+                    &nbsp;&nbsp;<span class="code-comment">// 构建带参数的URL</span><br>
+                    &nbsp;&nbsp;<span class="code-keyword">const</span> <span class="code-var">url</span> = <span class="code-string">`https://example.com/profile?user=<span class="code-var">${userId}</span>&source=<span class="code-var">${source}</span>`</span>;<br><br>
+                    
+                    &nbsp;&nbsp;<span class="code-comment">// 跳转到带参数的URL</span><br>
+                    &nbsp;&nbsp;window.location.href = <span class="code-var">url</span>;<br>
+                    });
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>JavaScript按钮跳转功能演示 &copy; 2023 | 使用纯JavaScript实现</p>
+            <p>提示：在实际项目中，请将示例URL替换为您需要跳转的真实网址</p>
+        </footer>
+    </div>
+
+    <script src="./index.js"></script>
+</body>
+</html>

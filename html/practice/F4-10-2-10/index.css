@@ -1,0 +1,27 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background-image: url(./images/1.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.box {
+  font-size: 0;
+}
+.box img {
+  box-sizing: border-box;
+  width: 20%;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.box img:active {
+  transform: scale(0.95);
+}

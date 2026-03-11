@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown学习笔记管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr 1.2fr;
+            gap: 25px;
+            height: calc(100vh - 40px);
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--light-gray);
+            border-radius: 50px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .categories h3, .tags h3 {
+            font-size: 16px;
+            margin: 20px 0 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-list, .tag-list {
+            list-style: none;
+        }
+        
+        .category-item, .tag-item {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        
+        .category-item:hover, .tag-item:hover {
+            background: var(--light-gray);
+        }
+        
+        .category-item.active, .tag-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .category-item i, .tag-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .tag-item {
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        /* 笔记列表样式 */
+        .notes-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-header h2 {
+            font-size: 20px;
+            color: var(--dark);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .note-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+            cursor: pointer;
+        }
+        
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .note-card.active {
+            border: 2px solid var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .note-thumbnail {
+            height: 140px;
+            background: linear-gradient(135deg, #4361ee, #4cc9f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+        
+        .note-content {
+            padding: 18px;
+        }
+        
+        .note-content h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+        
+        .note-path {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 8px;
+            font-style: italic;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .note-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .note-tag {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 50px;
+        }
+        
+        /* 预览区样式 */
+        .preview-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .preview-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .preview-header h2 {
+            font-size: 20px;
+            color: var(--dark);
+        }
+        
+        .preview-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            color: var(--gray);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .preview-content {
+            padding: 25px;
+            overflow-y: auto;
+            height: 100%;
+        }
+        
+        .markdown-body {
+            line-height: 1.6;
+        }
+        
+        .markdown-body h1, 
+        .markdown-body h2, 
+        .markdown-body h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            color: var(--dark);
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 8px;
+        }
+        
+        .markdown-body h1 {
+            font-size: 28px;
+        }
+        
+        .markdown-body h2 {
+            font-size: 24px;
+        }
+        
+        .markdown-body h3 {
+            font-size: 20px;
+        }
+        
+        .markdown-body p {
+            margin-bottom: 16px;
+        }
+        
+        .markdown-body pre {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        .markdown-body code {
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .markdown-body blockquote {
+            border-left: 4px solid var(--accent);
+            padding: 0 16px;
+            color: var(--gray);
+            margin: 0 0 16px;
+        }
+        
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .markdown-body th, 
+        .markdown-body td {
+            border: 1px solid var(--light-gray);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .markdown-body th {
+            background: var(--light);
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray);
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: var(--light-gray);
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray);
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .editor-textarea {
+            width: 100%;
+            flex: 1;
+            padding: 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            resize: none;
+            background: #f8f9fa;
+        }
+        
+        .editor-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .editor-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .save-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .save-btn:hover {
+            background: var(--secondary);
+        }
+        
+        .cancel-btn {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+        
+        .cancel-btn:hover {
+            background: #d1d5db;
+        }
+        
+        /* 模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            font-size: 20px;
+            color: var(--dark);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        
+        .close-modal:hover {
+            color: var(--warning);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+        
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .tag-input {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .tag-suggestion {
+            background: var(--light-gray);
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .tag-suggestion:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        /* 存储设置模态框 */
+        .storage-settings {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .storage-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .storage-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .storage-modal {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            width: 300px;
+            display: none;
+        }
+        
+        .storage-modal.active {
+            display: block;
+        }
+        
+        .storage-option {
+            margin-bottom: 15px;
+        }
+        
+        .storage-option label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        /* 文件路径选择器 */
+        .path-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .path-input {
+            flex: 1;
+        }
+        
+        .path-browse-btn {
+            padding: 8px 15px;
+            background: var(--light-gray);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 250px 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .preview-section {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .preview-section {
+                grid-column: span 1;
+            }
+            
+            .notes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .status-bar {
+            padding: 10px 20px;
+            background: var(--light);
+            border-top: 1px solid var(--light-gray);
+            font-size: 14px;
+            color: var(--gray);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .file-path-display {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 5px;
+            padding: 5px;
+            background: var(--light-gray);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 存储设置按钮 -->
+    <div class="storage-settings">
+        <button class="storage-btn" id="storageSettingsBtn">
+            <i class="fas fa-database"></i>
+        </button>
+        <div class="storage-modal" id="storageModal">
+            <h3>存储设置</h3>
+            <div class="storage-option">
+                <label for="storageLocation">存储位置</label>
+                <select id="storageLocation" class="form-control">
+                    <option value="local">本地存储 (localStorage)</option>
+                    <option value="custom">自定义位置</option>
+                </select>
+            </div>
+            <div class="storage-option" id="customPathContainer" style="display: none;">
+                <label for="customPath">自定义路径</label>
+                <input type="text" id="customPath" class="form-control" placeholder="例如: my_notes_data">
+            </div>
+            <button class="btn" id="saveStorageSettings" style="width: 100%;">保存设置</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>Markdown笔记库</h1>
+            </div>
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="搜索笔记...">
+            </div>
+            
+            <div class="categories">
+                <h3><i class="fas fa-folder"></i> 分类</h3>
+                <ul class="category-list" id="categoryList">
+                    <li class="category-item active" data-category="all">
+                        <i class="fas fa-layer-group"></i> 全部笔记
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="tags">
+                <h3><i class="fas fa-tags"></i> 标签</h3>
+                <div class="tag-list" id="tagList">
+                    <!-- 标签将通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 笔记列表区 -->
+        <div class="notes-section">
+            <div class="section-header">
+                <h2>学习笔记</h2>
+                <button class="btn" id="newNoteBtn">
+                    <i class="fas fa-plus"></i> 新建笔记
+                </button>
+            </div>
+            
+            <div class="notes-grid" id="notesGrid">
+                <!-- 笔记卡片将通过JS动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 预览区 -->
+        <div class="preview-section">
+            <div class="preview-header">
+                <h2 id="previewTitle">选择笔记进行预览</h2>
+                <div class="preview-actions">
+                    <button class="action-btn" id="editBtn" title="编辑">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn" id="downloadBtn" title="下载">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="action-btn" id="deleteBtn" title="删除">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="preview-content" id="previewContent">
+                <div class="empty-state">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>没有选择笔记</h3>
+                    <p>从左侧列表中选择一个笔记进行预览</p>
+                </div>
+            </div>
+            <div class="status-bar">
+                <span id="statusInfo">就绪</span>
+                <span id="lastSaved">尚未保存</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新建笔记模态框 -->
+    <div class="modal-overlay" id="newNoteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>新建笔记</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="noteTitle">标题</label>
+                    <input type="text" id="noteTitle" class="form-control" placeholder="输入笔记标题">
+                </div>
+                
+                <div class="form-group">
+                    <label for="noteCategory">分类</label>
+                    <select id="noteCategory" class="form-control">
+                        <option value="web">Web开发</option>
+                        <option value="language">编程语言</option>
+                        <option value="algorithm">算法与数据结构</option>
+                        <option value="devops">DevOps</option>
+                        <option value="database">数据库</option>
+                        <option value="other">其他</option>
+                    </select>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="newCategory">或创建新分类</label>
+                        <input type="text" id="newCategory" class="form-control" placeholder="输入新分类名称">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noteFilePath">存储路径</label>
+                    <input type="text" id="noteFilePath" class="form-control" placeholder="例如: Web开发/JavaScript">
+                    <div class="file-path-display" id="filePathDisplay">将创建文件夹: <span id="folderPathPreview">无</span></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noteTags">标签</label>
+                    <input type="text" id="noteTags" class="form-control" placeholder="输入标签，用逗号分隔">
+                    <div class="tag-input-container">
+                        <input type="text" id="tagInput" class="form-control tag-input" placeholder="添加标签">
+                        <button class="btn" id="addTagBtn" style="padding: 8px 15px;">添加</button>
+                    </div>
+                    <div class="tag-suggestions" id="tagSuggestions">
+                        <!-- 标签建议将通过JS动态生成 -->
+                    </div>
+                    <div class="tag-list" id="selectedTags" style="margin-top: 10px;">
+                        <!-- 已选标签将通过JS动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noteContent">内容 (Markdown格式)</label>
+                    <textarea id="noteContent" class="form-control editor-textarea" rows="8" placeholder="输入笔记内容..."># 新笔记
+
+在这里写下你的学习内容...</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelNewNote">取消</button>
+                <button class="btn" id="createNoteBtn">创建笔记</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 定义本地存储键名
+        const DEFAULT_STORAGE_KEY_NOTES = 'markdownNotes';
+        const DEFAULT_STORAGE_KEY_TAGS = 'markdownTags';
+        const DEFAULT_STORAGE_KEY_CATEGORIES = 'markdownCategories';
+        
+        // 当前存储设置
+        let storageSettings = {
+            location: 'local',
+            customPath: ''
+        };
+        
+        // 获取实际存储键名
+        function getStorageKey(baseKey) {
+            if (storageSettings.location === 'custom' && storageSettings.customPath) {
+                return `${storageSettings.customPath}_${baseKey}`;
+            }
+            return baseKey;
+        }
+        
+        // 初始化Marked.js和Highlight.js
+        marked.setOptions({
+            breaks: true,
+            highlight: function(code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            }
+        });
+        
+        // 从本地存储加载数据或初始化默认数据
+        function loadDataFromStorage() {
+            const storageKeyNotes = getStorageKey(DEFAULT_STORAGE_KEY_NOTES);
+            const storageKeyTags = getStorageKey(DEFAULT_STORAGE_KEY_TAGS);
+            const storageKeyCategories = getStorageKey(DEFAULT_STORAGE_KEY_CATEGORIES);
+            
+            // 尝试加载笔记数据
+            const savedNotes = localStorage.getItem(storageKeyNotes);
+            const savedTags = localStorage.getItem(storageKeyTags);
+            const savedCategories = localStorage.getItem(storageKeyCategories);
+            
+            if (savedNotes && savedTags && savedCategories) {
+                return {
+                    notes: JSON.parse(savedNotes),
+                    tags: JSON.parse(savedTags),
+                    categories: JSON.parse(savedCategories)
+                };
+            }
+            
+            // 默认数据 - 添加filePath属性
+            return {
+                notes: [
+                    {
+                        id: 1,
+                        title: "JavaScript高级特性",
+                        category: "language",
+                        tags: ["JavaScript", "ES6"],
+                        date: "2023-06-15",
+                        thumbnail: "JS",
+                        filePath: "编程语言/JavaScript",
+                        content: "# JavaScript高级特性\n\n## 箭头函数\n\n箭头函数提供了一种更简洁的函数写法...\n\n```javascript\nconst add = (a, b) => a + b;\n```\n\n## 解构赋值\n\n解构赋值允许我们从数组或对象中提取数据..."
+                    },
+                    {
+                        id: 2,
+                        title: "React Hooks指南",
+                        category: "web",
+                        tags: ["React", "Hooks"],
+                        date: "2023-07-02",
+                        thumbnail: "⚛️",
+                        filePath: "Web开发/React",
+                        content: "# React Hooks指南\n\n## useState\n\n用于在函数组件中添加状态...\n\n```jsx\nconst [count, setCount] = useState(0);\n```\n\n## useEffect\n\n用于处理副作用操作..."
+                    },
+                    {
+                        id: 3,
+                        title: "Python数据结构",
+                        category: "language",
+                        tags: ["Python", "数据结构"],
+                        date: "2023-05-20",
+                        thumbnail: "🐍",
+                        filePath: "编程语言/Python",
+                        content: "# Python数据结构\n\n## 列表(List)\n\n有序的可变集合...\n\n```python\nmy_list = [1, 2, 3]\n```\n\n## 字典(Dictionary)\n\n键值对的无序集合..."
+                    }
+                ],
+                tags: [
+                    "JavaScript", "React", "Vue", "Node.js", "Python", 
+                    "CSS", "HTML", "Git", "Docker", "MongoDB",
+                    "TypeScript", "Angular", "Express", "Kubernetes",
+                    "SQL", "NoSQL", "GraphQL", "RESTful", "API"
+                ],
+                categories: [
+                    { id: "web", name: "Web开发" },
+                    { id: "language", name: "编程语言" },
+                    { id: "algorithm", name: "算法与数据结构" },
+                    { id: "devops", name: "DevOps" },
+                    { id: "database", name: "数据库" },
+                    { id: "other", name: "其他" }
+                ]
+            };
+        }
+        
+        // 保存数据到本地存储
+        function saveDataToStorage() {
+            const storageKeyNotes = getStorageKey(DEFAULT_STORAGE_KEY_NOTES);
+            const storageKeyTags = getStorageKey(DEFAULT_STORAGE_KEY_TAGS);
+            const storageKeyCategories = getStorageKey(DEFAULT_STORAGE_KEY_CATEGORIES);
+            
+            localStorage.setItem(storageKeyNotes, JSON.stringify(notesConfig));
+            localStorage.setItem(storageKeyTags, JSON.stringify(availableTags));
+            localStorage.setItem(storageKeyCategories, JSON.stringify(availableCategories));
+            
+            // 更新最后保存时间
+            const now = new Date();
+            lastSavedEl.textContent = `最后保存: ${now.toLocaleTimeString()}`;
+            statusInfoEl.textContent = "数据已保存到本地存储";
+        }
+        
+        // 加载数据
+        const loadedData = loadDataFromStorage();
+        let notesConfig = loadedData.notes;
+        let availableTags = loadedData.tags;
+        let availableCategories = loadedData.categories;
+        let nextId = notesConfig.length > 0 ? Math.max(...notesConfig.map(n => n.id)) + 1 : 1;
+
+        // DOM元素
+        const notesGrid = document.getElementById('notesGrid');
+        const previewContent = document.getElementById('previewContent');
+        const previewTitle = document.getElementById('previewTitle');
+        const searchInput = document.getElementById('searchInput');
+        const categoryList = document.getElementById('categoryList');
+        const tagList = document.getElementById('tagList');
+        const newNoteBtn = document.getElementById('newNoteBtn');
+        const editBtn = document.getElementById('editBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const newNoteModal = document.getElementById('newNoteModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelNewNote = document.getElementById('cancelNewNote');
+        const createNoteBtn = document.getElementById('createNoteBtn');
+        const noteTitle = document.getElementById('noteTitle');
+        const noteCategory = document.getElementById('noteCategory');
+        const newCategory = document.getElementById('newCategory');
+        const noteTags = document.getElementById('noteTags');
+        const tagInput = document.getElementById('tagInput');
+        const addTagBtn = document.getElementById('addTagBtn');
+        const tagSuggestions = document.getElementById('tagSuggestions');
+        const selectedTags = document.getElementById('selectedTags');
+        const noteContent = document.getElementById('noteContent');
+        const statusInfoEl = document.getElementById('statusInfo');
+        const lastSavedEl = document.getElementById('lastSaved');
+        const storageSettingsBtn = document.getElementById('storageSettingsBtn');
+        const storageModal = document.getElementById('storageModal');
+        const storageLocation = document.getElementById('storageLocation');
+        const customPathContainer = document.getElementById('customPathContainer');
+        const customPath = document.getElementById('customPath');
+        const saveStorageSettings = document.getElementById('saveStorageSettings');
+        const noteFilePath = document.getElementById('noteFilePath');
+        const folderPathPreview = document.getElementById('folderPathPreview');
+
+        // 当前选中的分类和标签
+        let currentCategory = 'all';
+        let currentTag = '';
+        let currentSearch = '';
+        let selectedNoteId = null;
+        let isEditing = false;
+        let tempSelectedTags = [];
+
+        // 初始化页面
+        function initPage() {
+            renderNotes(notesConfig);
+            renderCategories();
+            renderTags();
+            setupEventListeners();
+            updateTagSuggestions();
+            updateFolderPathPreview();
+            
+            // 设置最后保存时间
+            const now = new Date();
+            lastSavedEl.textContent = `最后保存: ${now.toLocaleTimeString()}`;
+            statusInfoEl.textContent = "就绪";
+        }
+
+        // 渲染笔记列表
+        function renderNotes(notes) {
+            notesGrid.innerHTML = '';
+            
+            if (notes.length === 0) {
+                notesGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-inbox"></i>
+                        <h3>没有找到笔记</h3>
+                        <p>尝试更改搜索条件或创建新笔记</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notes.forEach(note => {
+                const noteCard = document.createElement('div');
+                noteCard.className = `note-card ${selectedNoteId === note.id ? 'active' : ''}`;
+                noteCard.dataset.id = note.id;
+                
+                noteCard.innerHTML = `
+                    <div class="note-thumbnail">${note.thumbnail}</div>
+                    <div class="note-content">
+                        <h3>${note.title}</h3>
+                        <div class="note-path">${note.filePath || '未指定路径'}</div>
+                        <div class="note-meta">
+                            <span>${note.date}</span>
+                            <span>${getCategoryIcon(note.category)} ${getCategoryName(note.category)}</span>
+                        </div>
+                        <div class="note-tags">
+                            ${note.tags.map(tag => `<span class="note-tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                notesGrid.appendChild(noteCard);
+            });
+            
+            // 选中第一个笔记
+            if (!selectedNoteId && notes.length > 0) {
+                selectNote(notes[0].id);
+            }
+        }
+
+        // 渲染分类列表
+        function renderCategories() {
+            // 保留"全部笔记"项
+            const allItem = categoryList.querySelector('[data-category="all"]');
+            categoryList.innerHTML = '';
+            categoryList.appendChild(allItem);
+            
+            // 添加其他分类
+            availableCategories.forEach(cat => {
+                const li = document.createElement('li');
+                li.className = 'category-item';
+                if (cat.id === currentCategory) {
+                    li.classList.add('active');
+                }
+                li.dataset.category = cat.id;
+                
+                li.innerHTML = `
+                    <i class="${getCategoryIconClass(cat.id)}"></i> ${cat.name}
+                `;
+                
+                categoryList.appendChild(li);
+            });
+        }
+
+        // 渲染标签列表
+        function renderTags() {
+            tagList.innerHTML = '';
+            
+            availableTags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'tag-item';
+                if (tag === currentTag) {
+                    span.classList.add('active');
+                }
+                span.textContent = tag;
+                span.dataset.tag = tag;
+                
+                tagList.appendChild(span);
+            });
+        }
+
+        // 获取分类名称
+        function getCategoryName(category) {
+            const cat = availableCategories.find(c => c.id === category);
+            return cat ? cat.name : category;
+        }
+
+        // 获取分类图标
+        function getCategoryIcon(category) {
+            const icons = {
+                'web': '🌐',
+                'language': '💻',
+                'algorithm': '🧠',
+                'devops': '🔧',
+                'database': '🗄️',
+                'other': '📝'
+            };
+            return icons[category] || '📝';
+        }
+        
+        // 获取分类图标类
+        function getCategoryIconClass(category) {
+            const classes = {
+                'web': 'fas fa-globe',
+                'language': 'fas fa-language',
+                'algorithm': 'fas fa-brain',
+                'devops': 'fas fa-server',
+                'database': 'fas fa-database',
+                'other': 'fas fa-folder'
+            };
+            return classes[category] || 'fas fa-folder';
+        }
+
+        // 选择笔记
+        function selectNote(noteId) {
+            selectedNoteId = noteId;
+            const note = notesConfig.find(n => n.id === noteId);
+            
+            if (note) {
+                previewTitle.textContent = note.title;
+                
+                if (isEditing) {
+                    exitEditMode();
+                }
+                
+                // 显示笔记内容
+                displayNoteContent(note);
+            }
+            
+            // 更新卡片选中状态
+            document.querySelectorAll('.note-card').forEach(card => {
+                card.classList.toggle('active', parseInt(card.dataset.id) === noteId);
+            });
+        }
+
+        // 显示笔记内容
+        function displayNoteContent(note) {
+            const htmlContent = marked.parse(note.content);
+            
+            previewContent.innerHTML = `
+                <div class="markdown-body">
+                    ${htmlContent}
+                </div>
+                <div class="file-path-display">
+                    <strong>存储路径:</strong> ${note.filePath || '未指定'}
+                </div>
+            `;
+            
+            // 高亮代码块
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        }
+
+        // 进入编辑模式
+        function enterEditMode(note) {
+            isEditing = true;
+            
+            previewContent.innerHTML = `
+                <div class="editor-container">
+                    <div class="editor-header">
+                        <h3>编辑笔记: ${note.title}</h3>
+                    </div>
+                    <textarea class="editor-textarea" id="editorTextarea">${note.content}</textarea>
+                    <div class="editor-actions">
+                        <button class="editor-btn save-btn" id="saveEditBtn">保存</button>
+                        <button class="editor-btn cancel-btn" id="cancelEditBtn">取消</button>
+                    </div>
+                </div>
+                <div class="file-path-display">
+                    <strong>存储路径:</strong> ${note.filePath || '未指定'}
+                </div>
+            `;
+            
+            // 添加事件监听器
+            document.getElementById('saveEditBtn').addEventListener('click', () => {
+                saveEditedContent(note);
+            });
+            
+            document.getElementById('cancelEditBtn').addEventListener('click', () => {
+                exitEditMode();
+                displayNoteContent(note);
+            });
+        }
+
+        // 退出编辑模式
+        function exitEditMode() {
+            isEditing = false;
+        }
+
+        // 保存编辑后的内容
+        function saveEditedContent(note) {
+            const textarea = document.getElementById('editorTextarea');
+            note.content = textarea.value;
+            
+            exitEditMode();
+            displayNoteContent(note);
+            saveDataToStorage(); // 保存更改到本地存储
+            statusInfoEl.textContent = "笔记已更新并保存";
+        }
+
+        // 下载笔记
+        function downloadNote(note) {
+            const content = note.content || '';
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${note.title.replace(/\s+/g, '_')}.md`;
+            document.body.appendChild(a);
+            a.click();
+            
+            // 清理
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 0);
+            
+            statusInfoEl.textContent = `笔记 "${note.title}" 已下载`;
+        }
+
+        // 删除笔记
+        function deleteNote(noteId) {
+            if (confirm('确定要删除此笔记吗？此操作不可撤销。')) {
+                notesConfig = notesConfig.filter(note => note.id !== noteId);
+                
+                if (selectedNoteId === noteId) {
+                    selectedNoteId = null;
+                    previewContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>没有选择笔记</h3>
+                            <p>从左侧列表中选择一个笔记进行预览</p>
+                        </div>
+                    `;
+                    previewTitle.textContent = '选择笔记进行预览';
+                }
+                
+                renderNotes(notesConfig);
+                saveDataToStorage(); // 保存更改到本地存储
+                statusInfoEl.textContent = "笔记已删除";
+            }
+        }
+
+        // 创建新笔记
+        function createNewNote() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // 处理分类
+            let category = noteCategory.value;
+            if (newCategory.value.trim() !== '') {
+                category = newCategory.value.trim().toLowerCase().replace(/\s+/g, '-');
+                
+                // 检查是否已存在
+                if (!availableCategories.some(cat => cat.id === category)) {
+                    availableCategories.push({
+                        id: category,
+                        name: newCategory.value.trim()
+                    });
+                    
+                    // 重新渲染分类列表
+                    renderCategories();
+                }
+            }
+            
+            // 处理文件路径
+            let filePath = noteFilePath.value.trim();
+            if (!filePath) {
+                filePath = `${getCategoryName(category)}/${noteTitle.value || '新笔记'}`;
+            }
+            
+            // 处理标签
+            const tags = [];
+            if (noteTags.value.trim() !== '') {
+                noteTags.value.split(',').forEach(tag => {
+                    const trimmedTag = tag.trim();
+                    if (trimmedTag && !tags.includes(trimmedTag)) {
+                        tags.push(trimmedTag);
+                        
+                        // 添加到可用标签
+                        if (!availableTags.includes(trimmedTag)) {
+                            availableTags.push(trimmedTag);
+                        }
+                    }
+                });
+            }
+            
+            // 添加临时选择的标签
+            tempSelectedTags.forEach(tag => {
+                if (!tags.includes(tag) && !availableTags.includes(tag)) {
+                    tags.push(tag);
+                    availableTags.push(tag);
+                } else if (!tags.includes(tag)) {
+                    tags.push(tag);
+                }
+            });
+            
+            // 创建新笔记对象 - 包含filePath属性
+            const newNote = {
+                id: nextId++,
+                title: noteTitle.value || "新笔记",
+                category: category,
+                tags: tags,
+                date: today,
+                thumbnail: "📄",
+                filePath: filePath,
+                content: noteContent.value || "# 新笔记\n\n在这里写下你的学习内容..."
+            };
+            
+            // 添加到笔记列表
+            notesConfig.unshift(newNote);
+            
+            // 重新渲染
+            renderNotes(notesConfig);
+            renderTags();
+            selectNote(newNote.id);
+            enterEditMode(newNote);
+            
+            // 保存数据到本地存储
+            saveDataToStorage();
+            statusInfoEl.textContent = "新笔记已创建并保存";
+            
+            // 关闭模态框
+            closeNewNoteModal();
+        }
+
+        // 打开新建笔记模态框
+        function openNewNoteModal() {
+            // 重置表单
+            noteTitle.value = "";
+            noteCategory.value = "web";
+            newCategory.value = "";
+            noteTags.value = "";
+            noteContent.value = "# 新笔记\n\n在这里写下你的学习内容...";
+            noteFilePath.value = "";
+            tempSelectedTags = [];
+            selectedTags.innerHTML = "";
+            updateFolderPathPreview();
+            
+            // 显示模态框
+            newNoteModal.classList.add('active');
+        }
+
+        // 关闭新建笔记模态框
+        function closeNewNoteModal() {
+            newNoteModal.classList.remove('active');
+        }
+
+        // 添加标签
+        function addTag() {
+            const tag = tagInput.value.trim();
+            if (tag && !tempSelectedTags.includes(tag)) {
+                tempSelectedTags.push(tag);
+                
+                // 添加到可用标签
+                if (!availableTags.includes(tag)) {
+                    availableTags.push(tag);
+                    renderTags();
+                }
+                
+                // 更新已选标签显示
+                renderSelectedTags();
+                
+                // 清空输入框
+                tagInput.value = "";
+            }
+        }
+
+        // 渲染已选标签
+        function renderSelectedTags() {
+            selectedTags.innerHTML = "";
+            
+            tempSelectedTags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'tag-item';
+                span.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+                span.style.color = '#4361ee';
+                span.innerHTML = `
+                    ${tag}
+                    <i class="fas fa-times" style="margin-left: 5px; cursor: pointer;" data-tag="${tag}"></i>
+                `;
+                selectedTags.appendChild(span);
+            });
+            
+            // 添加删除事件
+            document.querySelectorAll('#selectedTags .fa-times').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const tagToRemove = e.target.dataset.tag;
+                    tempSelectedTags = tempSelectedTags.filter(t => t !== tagToRemove);
+                    renderSelectedTags();
+                });
+            });
+        }
+
+        // 更新标签建议
+        function updateTagSuggestions() {
+            tagSuggestions.innerHTML = "";
+            
+            availableTags.forEach(tag => {
+                if (!tempSelectedTags.includes(tag)) {
+                    const span = document.createElement('span');
+                    span.className = 'tag-suggestion';
+                    span.textContent = tag;
+                    span.addEventListener('click', () => {
+                        if (!tempSelectedTags.includes(tag)) {
+                            tempSelectedTags.push(tag);
+                            renderSelectedTags();
+                            updateTagSuggestions();
+                        }
+                    });
+                    tagSuggestions.appendChild(span);
+                }
+            });
+        }
+        
+        // 更新文件夹路径预览
+        function updateFolderPathPreview() {
+            const title = noteTitle.value.trim() || "新笔记";
+            const category = noteCategory.value;
+            const categoryName = getCategoryName(category);
+            
+            if (noteFilePath.value.trim()) {
+                folderPathPreview.textContent = noteFilePath.value;
+            } else {
+                folderPathPreview.textContent = `${categoryName}/${title}`;
+            }
+        }
+
+        // 过滤笔记
+        function filterNotes() {
+            let filteredNotes = notesConfig;
+            
+            // 按分类过滤
+            if (currentCategory !== 'all') {
+                filteredNotes = filteredNotes.filter(note => note.category === currentCategory);
+            }
+            
+            // 按标签过滤
+            if (currentTag) {
+                filteredNotes = filteredNotes.filter(note => note.tags.includes(currentTag));
+            }
+            
+            // 按搜索词过滤
+            if (currentSearch) {
+                const searchLower = currentSearch.toLowerCase();
+                filteredNotes = filteredNotes.filter(note => 
+                    note.title.toLowerCase().includes(searchLower) || 
+                    note.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
+                    note.content.toLowerCase().includes(searchLower) ||
+                    (note.filePath && note.filePath.toLowerCase().includes(searchLower))
+                );
+            }
+            
+            renderNotes(filteredNotes);
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 笔记卡片点击
+            notesGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.note-card');
+                if (card) {
+                    const noteId = parseInt(card.dataset.id);
+                    selectNote(noteId);
+                }
+            });
+            
+            // 搜索输入
+            searchInput.addEventListener('input', (e) => {
+                currentSearch = e.target.value.trim();
+                filterNotes();
+            });
+            
+            // 分类点击
+            categoryList.addEventListener('click', (e) => {
+                const item = e.target.closest('.category-item');
+                if (item) {
+                    document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    currentCategory = item.dataset.category;
+                    filterNotes();
+                }
+            });
+            
+            // 标签点击
+            tagList.addEventListener('click', (e) => {
+                const item = e.target.closest('.tag-item');
+                if (item) {
+                    // 切换选中状态
+                    const wasActive = item.classList.contains('active');
+                    document.querySelectorAll('.tag-item').forEach(i => i.classList.remove('active'));
+                    
+                    if (!wasActive) {
+                        item.classList.add('active');
+                        currentTag = item.dataset.tag;
+                    } else {
+                        currentTag = '';
+                    }
+                    filterNotes();
+                }
+            });
+            
+            // 新建笔记按钮
+            newNoteBtn.addEventListener('click', openNewNoteModal);
+            
+            // 编辑按钮
+            editBtn.addEventListener('click', () => {
+                if (selectedNoteId) {
+                    const note = notesConfig.find(n => n.id === selectedNoteId);
+                    if (note) {
+                        enterEditMode(note);
+                    }
+                }
+            });
+            
+            // 下载按钮
+            downloadBtn.addEventListener('click', () => {
+                if (selectedNoteId) {
+                    const note = notesConfig.find(n => n.id === selectedNoteId);
+                    if (note) {
+                        downloadNote(note);
+                    }
+                }
+            });
+            
+            // 删除按钮
+            deleteBtn.addEventListener('click', () => {
+                if (selectedNoteId) {
+                    deleteNote(selectedNoteId);
+                }
+            });
+            
+            // 关闭模态框
+            closeModal.addEventListener('click', closeNewNoteModal);
+            cancelNewNote.addEventListener('click', closeNewNoteModal);
+            
+            // 创建笔记
+            createNoteBtn.addEventListener('click', createNewNote);
+            
+            // 添加标签按钮
+            addTagBtn.addEventListener('click', addTag);
+            
+            // 标签输入框回车事件
+            tagInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addTag();
+                }
+            });
+            
+            // 存储设置按钮
+            storageSettingsBtn.addEventListener('click', () => {
+                storageModal.classList.toggle('active');
+                // 加载当前设置
+                storageLocation.value = storageSettings.location;
+                customPath.value = storageSettings.customPath;
+                customPathContainer.style.display = storageSettings.location === 'custom' ? 'block' : 'none';
+            });
+            
+            // 存储位置变更
+            storageLocation.addEventListener('change', () => {
+                customPathContainer.style.display = storageLocation.value === 'custom' ? 'block' : 'none';
+            });
+            
+            // 保存存储设置
+            saveStorageSettings.addEventListener('click', () => {
+                storageSettings.location = storageLocation.value;
+                storageSettings.customPath = customPath.value.trim();
+                storageModal.classList.remove('active');
+                
+                // 重新加载数据
+                const loadedData = loadDataFromStorage();
+                notesConfig = loadedData.notes;
+                availableTags = loadedData.tags;
+                availableCategories = loadedData.categories;
+                nextId = notesConfig.length > 0 ? Math.max(...notesConfig.map(n => n.id)) + 1 : 1;
+                
+                // 重新渲染界面
+                renderNotes(notesConfig);
+                renderCategories();
+                renderTags();
+                filterNotes();
+                
+                statusInfoEl.textContent = `存储位置已更改为: ${storageSettings.location === 'local' ? '本地存储' : '自定义位置'}`;
+            });
+            
+            // 文件路径输入变化
+            noteFilePath.addEventListener('input', updateFolderPathPreview);
+            noteTitle.addEventListener('input', updateFolderPathPreview);
+            noteCategory.addEventListener('change', updateFolderPathPreview);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

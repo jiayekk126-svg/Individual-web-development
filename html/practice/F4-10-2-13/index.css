@@ -1,0 +1,45 @@
+.text {
+  /* 初始状态：完全透明 */
+  opacity: 0;
+  /* 默认过渡设置（用于消失动画） */
+  transition: opacity 20s ease; /* 消失时间1秒 */
+  
+  /* 可选美化样式 */
+  height: 100px;
+  width: 210px;
+  font-size: 24px;
+  line-height: 100px;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  background: rgb(252, 252, 253);
+  
+}
+
+/* 点击后添加的类名 */
+.text.show {
+  opacity: 1; /* 完全显示 */
+  /* 覆盖过渡设置（用于浮现动画） */
+  transition: opacity 0.3s ease; /* 出现时间0.3秒 */
+}
+
+.text::after {
+  content: "点击后移开鼠标";
+  font-size: 12px;
+  opacity: 0.6;
+}
+body{
+  
+  background: rgb(84, 84, 91);
+}
+
+.main{
+  
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}

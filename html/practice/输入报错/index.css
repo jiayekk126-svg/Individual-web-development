@@ -1,0 +1,85 @@
+.core {
+  width: 480px;
+  height: 571px;
+}
+
+form {
+  margin-top: 63px;
+}
+
+select,
+input {
+  box-sizing: border-box;
+  width: 480px;
+  height: 52px;
+  border: 1px solid #aaaaaa;
+  border-radius: 4px;
+  padding: 15px 20px;
+  font-size: 19px;
+}
+
+.mobile,
+input.password {
+  margin-top: 32px;
+}
+
+.mobile > select {
+  width: 154px;
+  background-color: white;
+  outline: none;
+}
+
+.mobile > input {
+  width: 307px;
+  float: right;
+}
+::placeholder {
+  color: #aaaaaa;
+  font-size: 19px;
+  font-weight: normal;
+}
+
+.mobile-tip {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 14px;
+  color: #999;
+}
+
+.submit {
+  margin-top: 38px;
+  width: 480px;
+  box-sizing: border-box;
+  height: 60px;
+  background-color: #3487ff;
+  border: 1px solid #3083ff;
+  box-sizing: border-box;
+  box-shadow: 0px 5px 8px rgba(24, 95, 255, 0.1);
+  border-radius: 4px;
+  outline: none;
+
+  font-weight: 200;
+  font-size: 24px;
+  line-height: 60px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.agreement {
+  margin-top: 32px;
+  font-size: 13px;
+  line-height: 30px;
+  color: #aaaaaa;
+}
+
+.agreement > input {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  padding: 0;
+  margin: 0;
+}
+
+.agreement > label {
+  vertical-align: middle;
+}

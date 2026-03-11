@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048小游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>2048</h1>
+            <div class="scores-container">
+                <div class="score-box">
+                    <div class="score-title">分数</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-title">最佳</div>
+                    <div class="score-value" id="best-score">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-intro">
+            <p>合并相同数字，达到<strong>2048</strong>！</p>
+        </div>
+        
+        <div class="grid-container">
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            
+            <div class="tile-container" id="tile-container"></div>
+            
+            <div class="game-message" id="game-message">
+                <div class="message-text" id="message-text"></div>
+                <button id="restart-button">再来一局</button>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="new-game">新游戏</button>
+            <button id="undo-btn">撤销</button>
+        </div>
+        
+        <div class="instructions">
+            <h3>游戏规则</h3>
+            <p>使用<strong>方向键</strong>或<strong>滑动</strong>移动方块</p>
+            <p>当两个相同数字的方块碰撞时，它们会<strong>合并</strong>成它们的和</p>
+            <p>每次移动后，会在空白处随机生成一个<strong>2</strong>或<strong>4</strong></p>
+            <p>当棋盘被填满且无法合并时，游戏结束</p>
+            <p>目标：创造出<strong>2048</strong>方块！</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

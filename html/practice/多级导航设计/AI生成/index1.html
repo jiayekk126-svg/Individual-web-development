@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二级导航菜单</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #ecf0f1;
+            font-size: 16px;
+        }
+        
+        .content {
+            display: flex;
+            min-height: 400px;
+        }
+        
+        .menu-container {
+            display: flex;
+            width: 100%;
+            background: #34495e;
+            color: white;
+        }
+        
+        .first {
+            width: 200px;
+            background: #2c3e50;
+            padding: 15px 0;
+        }
+        
+        .second {
+            flex: 1;
+            background: #ecf0f1;
+            padding: 15px 0;
+            min-width: 200px;
+        }
+        
+        .menu-title {
+            padding: 10px 20px;
+            font-weight: bold;
+            color: #3498db;
+            background: rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #3498db;
+        }
+        
+        .menu-item.active {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 3px solid #3498db;
+        }
+        
+        .menu-item i {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .menu-item img {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            object-fit: contain;
+        }
+        
+        .submenu-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .submenu-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        .submenu-item img {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+        
+        .code-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-top: 1px solid #444;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #9cdcfe;
+        }
+        
+        .code-block {
+            white-space: pre;
+        }
+        
+        .comment { color: #6a9955; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .var { color: #9cdcfe; }
+        
+        .instructions {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .first, .second {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>二级导航菜单实现</h1>
+            <div class="subtitle">基于JavaScript的动态菜单系统</div>
+        </header>
+        
+        <div class="content">
+            <div class="menu-container">
+                <div class="first"></div>
+                <div class="second"></div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>实现说明</h3>
+            <ul>
+                <li>使用提供的 <code>data</code> 数组作为菜单数据源</li>
+                <li>左侧显示一级菜单（主菜单），右侧显示二级菜单（子菜单）</li>
+                <li>点击有子菜单的项时，右侧显示对应的二级菜单</li>
+                <li>使用提供的图标资源，通过CDN加载</li>
+                <li>实现简洁现代的UI设计，响应式布局</li>
+            </ul>
+        </div>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <h3>JavaScript 实现代码</h3>
+            </div>
+            <div class="code-block"><span class="comment">// 菜单数据</span>
+<span class="keyword">let</span> <span class="var">data</span> = [
+  {
+    <span class="var">title</span>: <span class="string">'新建'</span>,
+    <span class="var">icon</span>: <span class="string">'https://style.youkeda.com/img/pizza/context-menu/new.png'</span>,
+    <span class="var">children</span>: [
+      {
+        <span class="var">title</span>: <span class="string">'文件'</span>,
+        <span class="var">icon</span>: <span class="string">'https://style.youkeda.com/img/pizza/context-menu/new_file.png'</span>
+      },
+      {
+        <span class="var">title</span>: <span class="string">'文件夹'</span>,
+        <span class="var">icon</span>: <span class="string">'https://style.youkeda.com/img/pizza/context-menu/new_folder.png'</span>
+      }
+    ]
+  },
+  {
+    <span class="var">title</span>: <span class="string">'导入'</span>,
+    <span class="var">icon</span>: <span class="string">'https://style.youkeda.com/img/pizza/context-menu/import.png'</span>
+  },
+  {
+    <span class="var">title</span>: <span class="string">'重命名'</span>,
+    <span class="var">icon</span>: <span class="string">'https://style.youkeda.com/img/pizza/context-menu/rename.png'</span>
+  },
+  {
+    <span class="var">title</span>: <span class="string">'删除'</span>,
+    <span class="var">icon</span>: <span class="string">'https://style.youkeda.com/img/pizza/context-menu/delete.png'</span>
+  }
+];
+
+<span class="comment">// 获取DOM元素</span>
+<span class="keyword">const</span> <span class="var">firstMenuBox</span> = document.querySelector(<span class="string">'.first'</span>);
+<span class="keyword">const</span> <span class="var">secondMenuBox</span> = document.querySelector(<span class="string">'.second'</span>);
+
+<span class="comment">// 清空容器</span>
+firstMenuBox.innerHTML = <span class="string">''</span>;
+secondMenuBox.innerHTML = <span class="string">''</span>;
+
+<span class="comment">// 添加一级菜单标题</span>
+<span class="keyword">const</span> <span class="var">firstTitle</span> = document.createElement(<span class="string">'div'</span>);
+firstTitle.className = <span class="string">'menu-title'</span>;
+firstTitle.textContent = <span class="string">'主菜单'</span>;
+firstMenuBox.appendChild(firstTitle);
+
+<span class="comment">// 添加二级菜单标题</span>
+<span class="keyword">const</span> <span class="var">secondTitle</span> = document.createElement(<span class="string">'div'</span>);
+secondTitle.className = <span class="string">'menu-title'</span>;
+secondTitle.textContent = <span class="string">'子菜单'</span>;
+secondMenuBox.appendChild(secondTitle);
+
+<span class="comment">// 渲染一级菜单</span>
+<span class="keyword">for</span> (<span class="keyword">let</span> <span class="var">i</span> = <span class="number">0</span>; <span class="var">i</span> &lt; data.length; <span class="var">i</span>++) {
+  <span class="keyword">const</span> <span class="var">item</span> = data[i];
+  
+  <span class="comment">// 创建菜单项</span>
+  <span class="keyword">const</span> <span class="var">menuItem</span> = document.createElement(<span class="string">'div'</span>);
+  menuItem.className = <span class="string">'menu-item'</span>;
+  
+  <span class="comment">// 添加图标</span>
+  <span class="keyword">const</span> <span class="var">icon</span> = document.createElement(<span class="string">'img'</span>);
+  icon.src = item.icon;
+  icon.alt = item.title;
+  
+  <span class="comment">// 添加标题</span>
+  <span class="keyword">const</span> <span class="var">title</span> = document.createElement(<span class="string">'span'</span>);
+  title.textContent = item.title;
+  
+  <span class="comment">// 组装菜单项</span>
+  menuItem.appendChild(icon);
+  menuItem.appendChild(title);
+  
+  <span class="comment">// 如果有子菜单，添加箭头图标</span>
+  <span class="keyword">if</span> (item.children) {
+    <span class="keyword">const</span> <span class="var">arrow</span> = document.createElement(<span class="string">'i'</span>);
+    arrow.className = <span class="string">'fas fa-chevron-right'</span>;
+    arrow.style.marginLeft = <span class="string">'auto'</span>;
+    arrow.style.fontSize = <span class="string">'12px'</span>;
+    menuItem.appendChild(arrow);
+  }
+  
+  <span class="comment">// 添加点击事件</span>
+  menuItem.addEventListener(<span class="string">'click'</span>, <span class="keyword">function</span>(<span class="var">e</span>) {
+    e.stopPropagation();
+    
+    <span class="comment">// 移除所有active状态</span>
+    document.querySelectorAll(<span class="string">'.menu-item'</span>).forEach(<span class="keyword">function</span>(<span class="var">el</span>) {
+      el.classList.remove(<span class="string">'active'</span>);
+    });
+    
+    <span class="comment">// 设置当前项为active</span>
+    this.classList.add(<span class="string">'active'</span>);
+    
+    <span class="comment">// 处理子菜单</span>
+    <span class="keyword">if</span> (item.children) {
+      renderSubMenu(item.children);
+    } <span class="keyword">else</span> {
+      secondMenuBox.innerHTML = <span class="string">''</span>;
+      secondMenuBox.appendChild(secondTitle);
+      
+      <span class="comment">// 显示空状态</span>
+      <span class="keyword">const</span> <span class="var">emptyState</span> = document.createElement(<span class="string">'div'</span>);
+      emptyState.className = <span class="string">'empty-state'</span>;
+      emptyState.innerHTML = `
+        <i class="fas fa-inbox"></i>
+        <p>此菜单项无子选项</p>
+      `;
+      secondMenuBox.appendChild(emptyState);
+    }
+  });
+  
+  <span class="comment">// 添加到一级菜单</span>
+  firstMenuBox.appendChild(menuItem);
+}
+
+<span class="comment">// 渲染子菜单函数</span>
+<span class="keyword">function</span> <span class="function">renderSubMenu</span>(<span class="var">children</span>) {
+  <span class="comment">// 清空二级菜单（保留标题）</span>
+  secondMenuBox.innerHTML = <span class="string">''</span>;
+  secondMenuBox.appendChild(secondTitle);
+  
+  <span class="comment">// 添加子菜单项</span>
+  <span class="keyword">for</span> (<span class="keyword">let</span> <span class="var">j</span> = <span class="number">0</span>; <span class="var">j</span> &lt; children.length; <span class="var">j</span>++) {
+    <span class="keyword">const</span> <span class="var">child</span> = children[j];
+    
+    <span class="keyword">const</span> <span class="var">subItem</span> = document.createElement(<span class="string">'div'</span>);
+    subItem.className = <span class="string">'submenu-item'</span>;
+    
+    <span class="comment">// 添加图标</span>
+    <span class="keyword">const</span> <span class="var">subIcon</span> = document.createElement(<span class="string">'img'</span>);
+    subIcon.src = child.icon;
+    subIcon.alt = child.title;
+    
+    <span class="comment">// 添加标题</span>
+    <span class="keyword">const</span> <span class="var">subTitle</span> = document.createElement(<span class="string">'span'</span>);
+    subTitle.textContent = child.title;
+    
+    <span class="comment">// 组装子菜单项</span>
+    subItem.appendChild(subIcon);
+    subItem.appendChild(subTitle);
+    
+    <span class="comment">// 添加点击事件</span>
+    subItem.addEventListener(<span class="string">'click'</span>, <span class="keyword">function</span>() {
+      alert(<span class="string">`已选择: <span class="subst">${child.title}</span>`</span>);
+    });
+    
+    <span class="comment">// 添加到二级菜单</span>
+    secondMenuBox.appendChild(subItem);
+  }
+}</div>
+        </div>
+    </div>
+
+    <script>
+        // 菜单数据
+        let data = [
+            {
+                title: '新建',
+                icon: 'https://style.youkeda.com/img/pizza/context-menu/new.png',
+                children: [
+                    {
+                        title: '文件',
+                        icon: 'https://style.youkeda.com/img/pizza/context-menu/new_file.png'
+                    },
+                    {
+                        title: '文件夹',
+                        icon: 'https://style.youkeda.com/img/pizza/context-menu/new_folder.png'
+                    }
+                ]
+            },
+            {
+                title: '导入',
+                icon: 'https://style.youkeda.com/img/pizza/context-menu/import.png'
+            },
+            {
+                title: '重命名',
+                icon: 'https://style.youkeda.com/img/pizza/context-menu/rename.png'
+            },
+            {
+                title: '删除',
+                icon: 'https://style.youkeda.com/img/pizza/context-menu/delete.png'
+            }
+        ];
+
+        // 获取DOM元素
+        const firstMenuBox = document.querySelector('.first');
+        const secondMenuBox = document.querySelector('.second');
+
+        // 清空容器
+        firstMenuBox.innerHTML = '';
+        secondMenuBox.innerHTML = '';
+
+        // 添加一级菜单标题
+        const firstTitle = document.createElement('div');
+        firstTitle.className = 'menu-title';
+        firstTitle.textContent = '主菜单';
+        firstMenuBox.appendChild(firstTitle);
+
+        // 添加二级菜单标题
+        const secondTitle = document.createElement('div');
+        secondTitle.className = 'menu-title';
+        secondTitle.textContent = '子菜单';
+        secondMenuBox.appendChild(secondTitle);
+
+        // 渲染一级菜单
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            
+            // 创建菜单项
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            
+            // 添加图标
+            const icon = document.createElement('img');
+            icon.src = item.icon;
+            icon.alt = item.title;
+            
+            // 添加标题
+            const title = document.createElement('span');
+            title.textContent = item.title;
+            
+            // 组装菜单项
+            menuItem.appendChild(icon);
+            menuItem.appendChild(title);
+            
+            // 如果有子菜单，添加箭头图标
+            if (item.children) {
+                const arrow = document.createElement('i');
+                arrow.className = 'fas fa-chevron-right';
+                arrow.style.marginLeft = 'auto';
+                arrow.style.fontSize = '12px';
+                menuItem.appendChild(arrow);
+            }
+            
+            // 添加点击事件
+            menuItem.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // 移除所有active状态
+                document.querySelectorAll('.menu-item').forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                
+                // 设置当前项为active
+                this.classList.add('active');
+                
+                // 处理子菜单
+                if (item.children) {
+                    renderSubMenu(item.children);
+                } else {
+                    secondMenuBox.innerHTML = '';
+                    secondMenuBox.appendChild(secondTitle);
+                    
+                    // 显示空状态
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    emptyState.innerHTML = `
+                        <i class="fas fa-inbox"></i>
+                        <p>此菜单项无子选项</p>
+                    `;
+                    secondMenuBox.appendChild(emptyState);
+                }
+            });
+            
+            // 添加到一级菜单
+            firstMenuBox.appendChild(menuItem);
+        }
+
+        // 渲染子菜单函数
+        function renderSubMenu(children) {
+            // 清空二级菜单（保留标题）
+            secondMenuBox.innerHTML = '';
+            secondMenuBox.appendChild(secondTitle);
+            
+            // 添加子菜单项
+            for (let j = 0; j < children.length; j++) {
+                const child = children[j];
+                
+                const subItem = document.createElement('div');
+                subItem.className = 'submenu-item';
+                
+                // 添加图标
+                const subIcon = document.createElement('img');
+                subIcon.src = child.icon;
+                subIcon.alt = child.title;
+                
+                // 添加标题
+                const subTitle = document.createElement('span');
+                subTitle.textContent = child.title;
+                
+                // 组装子菜单项
+                subItem.appendChild(subIcon);
+                subItem.appendChild(subTitle);
+                
+                // 添加点击事件
+                subItem.addEventListener('click', function() {
+                    alert(`已选择: ${child.title}`);
+                });
+                
+                // 添加到二级菜单
+                secondMenuBox.appendChild(subItem);
+            }
+        }
+    </script>
+</body>
+</html>

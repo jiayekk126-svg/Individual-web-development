@@ -1,0 +1,130 @@
+@charset "UTF-8";
+/**
+ * [xLarge Screen for PC]
+ * >=1200
+ */
+
+/**
+ * [Large Screen for PC & Pad]
+ * 960~1199
+ */
+@media screen and (max-width: 1600px) {
+
+.nav .wp-menu .menu-item {}
+.nav .wp-menu .menu-item a.menu-link {}
+
+.main4{overflow:hidden}
+.post-51 .swiper-button-prev{left:2.5%}
+.post-51 .swiper-button-next{right:2.5%}
+.col_news_head{left: 2.5%;margin: 0;width: auto;}
+ .mbanner .slick-dots{margin:0;right:30px}
+
+.post-52 .list-l{width:100%}
+.post-52 .list-r li.news:first-child{margin-bottom:0.15rem;display:none;}
+
+
+/*links*/
+.botlinks .links-wrap {margin:4px 5px;}
+/*banner*/
+.focus .focus-title-bar {}
+}
+
+/**
+ * [Medium Screen for Pad]
+ * 768~959
+ */
+@media screen and (max-width: 999px) { 
+.wrapper .inner {width:100%;margin:0 auto;max-width: none;}
+.wrapper .inner .mod {width:auto;padding: 0 10px;}
+.navi-aside-toggle,
+.navi-aside-search {display: block;}
+.header1 .sitelogo a img{max-width: 50%;width: auto;}
+
+#header1.menu-open-arrow:before{display: none;}
+#header1 .mod{position: relative;padding: 0;}
+#header1.fixed .inner{padding-top:0}
+#header1 .inner{padding: 0 10px;height: auto;position:relative;background:none;max-width: none;width: auto;}
+.header1 .head-left{float:none;display:inline-block;width: auto;height:auto;text-align: left;margin-top: 16px;}
+.header1 .sitelogo{float:none;margin-top:0px;}
+.header1 .sitelogo a{display:inline-block;width:100%;margin:0 auto;}
+.header1 .sitetitle {margin-top:38px;font-size:28px;}
+.header1 .head-main{display:none;}
+.header1 .head-right{float:none;width:100%;margin-top:0px;display: none;}
+.header1 .head-right .searchbox{margin: 5px 0px; width:100%;}
+.main #header1{position:fixed}
+#header1{position:absolute}
+#header1:before{height: 100px;display:block}
+}
+/*footer*/
+
+.foot-right .wp-search {
+    border: 1px solid #ddd;
+}
+.ssous .searchbox {
+    width: 48%;
+}
+
+.ssous {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;    margin-top: 0.15rem;
+}
+.ssous .search-input input.search-title {
+    font-family: 微软雅黑;
+    color: #8d8d8d;
+    height: 27px;
+    line-height: 27px;
+}
+.ssous .wp-search .search-btn {
+    width: 36px;
+    height: 29px;
+    position: absolute;
+    right: 0;
+    top: -1px;
+    margin: 0;
+    display: block;
+}
+.ssous .search-btn input.search-submit {
+    width: 36px;
+    height: 29px;
+    background: url(images/sousuo_blue.jpg) no-repeat;    background-size: 100% 100%;
+    border: 0px;
+}
+.foot_rightt {
+    width: 48%;
+}
+.foot_rightt form {
+    border: 1px solid #ddd;    position: relative;
+}
+.foot_rightt input.shurukuang {
+    font-family: 微软雅黑;
+    color: #8d8d8d;
+    height: 27px;
+    line-height: 27px;
+    width: 100%;    border: 0;    text-indent: 5px;
+}.foot_rightt input.sousuoanniu {
+    width: 36px;
+    height: 29px;
+    position: absolute;
+    right: 0;
+    top: -1px;
+    margin: 0;    border: 0;
+    display: block;background: url(images/sousuo_white.jpg) no-repeat;    background-size: 100% 100%;
+}
+
+.wp-navi-aside .navi-aside-wrap .en_link{}
+.wp-navi-aside .navi-aside-wrap .en_link a{display: block;
+    text-decoration: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 22px;
+    padding: 7px 30px 7px 10px;
+    border-bottom: 1px solid rgba(224, 224, 224, 0.13);padding-left: 35px;}
+
+.main1 .post-12 .swiper-button:hover {
+    opacity: 1 !important;
+    cursor: auto !important;
+    pointer-events: auto !important;
+}
+

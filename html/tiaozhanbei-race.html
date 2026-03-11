@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>挑战杯</title>
+    <style>
+        /* 关键：让背景图片铺满整个页面 */
+        body {
+            margin: 0;            /* 去掉默认边距 */
+            padding: 0;
+            height: 100vh;        /* 让 body 占满整个视口高度 */
+            background-image: url('屏幕截图 2025-08-21 211149.png');  /* 你的背景图片路径 */
+            background-size: cover;      /* 图片覆盖整个区域，可能会裁剪 */
+            background-position: center; /* 图片居中显示 */
+            background-repeat: no-repeat; /* 禁止重复平铺 */
+            background-attachment: fixed;
+        }
+
+        /* 设置白色背景或透明度 */
+        .content {
+            padding: 20px;
+            color: white;
+            text-shadow: 1px 1px 3px black; /* 文字加阴影，避免白色背景上看不清 */
+        }
+        /*动态变化透明度设置*/
+        .hover-transparent {      /*定义一个模块其属性如下*/
+            background-color: grey;  /*背景颜色设置*/
+            opacity: 0.8;       /*透明度设置*/
+            transition: opacity 0.3s;  /*动画变化过程，需要0.3秒*/
+        }
+        .hover-transparent:hover { /*在鼠标触碰时透明度下降到0.4*/
+            opacity: 0.4;
+        }
+         /* 使用RGBA颜色值设置透明度 */
+        .rgba {
+            background-color: rgba(255, 0, 0, 0.5); /* 红色，50%透明度 */
+        }
+
+        /*使用HSLA颜色值设置透明度 */
+        .hsla {
+            background-color: hsla(120, 100%, 50%, 0.3); /* 绿色，30%透明度 */
+        }
+    </style>
+</head>
+<body>
+<table border="0">
+    <tr>
+        <td>
+            <b>内容:自然科学类学术论文、科技发明制作、哲学社科调研报告</b>
+            <b>时间:偶数年举办创新 奇数年举办创业，校赛→省赛→国赛周期约1年</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+           <b>含金量:★★★★★（学术科研天花板级赛事）</b>
+            <b>要求:个人/团队，需突出学术创新性</b>
+            <b>考研保研:TOP高校直博/课题组青睐的核心指标</b>
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <img src="../static/images/屏幕截图%202025-08-19%20194455.png" height="700" width="1000" >
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <img src="../static/images/屏幕截图%202025-08-19%20194504.png" height="700" width="1000" >
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

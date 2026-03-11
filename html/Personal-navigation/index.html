@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 响应式必备 -->
+    <title>个人导航页</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- 背景滑动容器 -->
+    <div class="bg-slider">
+        <div class="bg-track"> <!-- 横向排列多张背景图 -->
+            <div class="bg-item active" style="background-image: url('images/bg1.jpg')"></div>
+            <div class="bg-item" style="background-image: url('images/bg2.jpg')"></div>
+            <div class="bg-item" style="background-image: url('images/bg3.jpg')"></div>
+            <div class="bg-item" style="background-image: url('images/bg4.jpg')"></div>
+            <div class="bg-item" style="background-image: url('images/bg5.jpg')"></div>
+            <div class="bg-item" style="background-image: url('images/bg6.jpg')"></div>
+            <div class="bg-item" style="background-image: url('images/bg7.jpg')"></div>
+        </div>
+    </div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <header class="navbar">
+        <!-- 左侧Logo和标题 -->
+        <div class="logo">
+            <a href="https://www.htu.edu.cn" target="_blank"></a>
+            <div>
+                <h1>个人空间</h1>
+                <p>Personal Navigation</p>
+            </div>
+
+        </div>
+
+        <!-- 汉堡菜单按钮（移动端显示） -->
+        <input type="checkbox" id="menu-toggle" class="menu-toggle">
+        <label for="menu-toggle" class="hamburger">
+            <i class="fas fa-bars"></i>
+        </label>
+
+        <!-- 中间导航菜单-->
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="index.html">首页</a></li>
+                <li class="has-dropdown">
+                    <a href="../practice/" target="_blank">作品集 <i class="fas fa-caret-down"></i></a>
+                    <ul class="dropdown-menu"> <!-- 下拉菜单 -->
+                        <li><a href="#">设计案例</a></li>
+                        <li><a href="#">开发项目</a></li>
+                        <li><a href="../web-daohang.html" target="_blank">师大导航</a></li>
+                    </ul>
+                </li>
+                <li class="has-dropdown">
+                    <a href="../Personal-Homepage.html" target="_blank">博客 <i class="fas fa-caret-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">技术分享</a></li>
+                        <li><a href="#">生活随笔</a></li>
+                        <li><a href="../Study-notes/Study-notes.html"  target="_blank">学习笔记</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">关于我</a></li>
+                <li><a href="#">联系方式</a></li>
+            </ul>
+        </nav>
+
+        <!-- 右上角搜索区域 -->
+        <div class="search-container">
+            <div class="search-box"> <!-- 搜索框（默认隐藏） -->
+                <input type="text" placeholder="搜索内容...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <button class="search-btn"><i class="fas fa-search"></i></button> <!-- 搜索按钮 -->
+        </div>
+    </header>
+
+    <!-- 主体内容（可留空或添加简介） -->
+    <main class="content container">
+        <h2>欢迎来到我的个人导航页</h2>
+        <p>探索我的作品、博客与生活记录</p>
+    </main>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
